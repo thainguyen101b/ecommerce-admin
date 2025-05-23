@@ -1,26 +1,7 @@
-# ecommerce-admin
+## Project Overview
+This is a Admin Dashboard application for [ecommerce](https://github.com/thainguyen101b/ecommerce) using React.
 
-## Installation
-
-Install the application dependencies by running:
-
-```sh
-npm install
-```
-
-## Development
-
-Start the application in development mode by running:
-
-```sh
-npm run dev
-```
-
-## Production
-
-Build the application in production mode by running:
-
-```sh
-npm run build
-```
-
+## Technical Stack
+- **Front-end**: React 19
+- **UI library**: React-Admin (RA)
+- **Authentication**: keycloak-js
