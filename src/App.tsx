@@ -14,8 +14,10 @@ import ProductIcon from "@mui/icons-material/Inventory";
 import { Dashboard } from "./Dashboard";
 import { CategoryCreate } from "./categories/CategoryCreate";
 import { CategoryEdit } from "./categories/CategoryEdit";
-import { SubcategoryCreate } from "./subcategories/SubCategoryCreate";
-import { SubcategoryEdit } from "./subcategories/SubCategoryEdit";
+import { ProductCreate } from "./products/ProductCreate";
+import { SubcategoryCreate } from "./subcategories/SubcategoryCreate";
+import { SubcategoryEdit } from "./subcategories/SubcategoryEdit";
+import { ProductEdit } from "./products/ProductEdit";
 
 const authProvider = keycloakAuthProvider(keycloak, {
   initOptions: keycloakInitOptions,
@@ -50,7 +52,8 @@ export const App = () => (
     <Resource
       name="products"
       list={ListGuesser}
-      edit={EditGuesser}
+      create={ProductCreate}
+      edit={ProductEdit}
       show={ShowGuesser}
       icon={ProductIcon}
     />
