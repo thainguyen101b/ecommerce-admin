@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import {
+  AutocompleteInput,
   Edit,
   ReferenceInput,
   SimpleForm,
@@ -40,7 +41,12 @@ export const ProductEdit = () => {
           source="subcategoryId"
           reference="subcategories"
           label="Subcategory"
-        />
+        >
+          <AutocompleteInput
+            optionText="name"
+            helperText="Type to search subcategory"
+          />
+        </ReferenceInput>
 
         <TextInput disabled label="Created At" source="createdAt" />
         <TextInput disabled label="Updated At" source="updatedAt" />

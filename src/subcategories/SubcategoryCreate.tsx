@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import {
+  AutocompleteInput,
   Create,
   ReferenceInput,
   SimpleForm,
@@ -42,7 +43,12 @@ export const SubcategoryCreate = () => {
           source="categoryId"
           reference="categories"
           label="Parent Category"
-        ></ReferenceInput>
+        >
+          <AutocompleteInput
+            optionText="name"
+            helperText="Type to search category"
+          />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
