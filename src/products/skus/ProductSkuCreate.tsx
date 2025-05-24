@@ -5,7 +5,6 @@ import {
   NumberInput,
   ReferenceInput,
   required,
-  SelectInput,
   SimpleForm,
   TextInput,
   useNotify,
@@ -48,7 +47,10 @@ export const ProductSkuCreate = () => {
           validate={[required("Product Sku quantity is required")]}
         />
         <ReferenceInput source="productId" reference="products" label="Product">
-          <SelectInput optionText="name" />
+          <AutocompleteInput
+            optionText="name"
+            helperText="Type to search product"
+          />
         </ReferenceInput>
         <ReferenceInput
           source="sizeAttributeId"
