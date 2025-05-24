@@ -18,6 +18,8 @@ import { ProductCreate } from "./products/ProductCreate";
 import { SubcategoryCreate } from "./subcategories/SubcategoryCreate";
 import { SubcategoryEdit } from "./subcategories/SubcategoryEdit";
 import { ProductEdit } from "./products/ProductEdit";
+import { AttributeCreate } from "./products/attributes/AttributeCreate";
+import { AttributeEdit } from "./products/attributes/AttributeEdit";
 
 const authProvider = keycloakAuthProvider(keycloak, {
   initOptions: keycloakInitOptions,
@@ -69,7 +71,8 @@ export const App = () => (
     <Resource
       name="products/attributes"
       list={ListGuesser}
-      edit={EditGuesser}
+      create={AttributeCreate}
+      edit={AttributeEdit}
       show={ShowGuesser}
     />
   </Admin>
