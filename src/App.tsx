@@ -20,6 +20,8 @@ import { SubcategoryEdit } from "./subcategories/SubcategoryEdit";
 import { ProductEdit } from "./products/ProductEdit";
 import { AttributeCreate } from "./products/attributes/AttributeCreate";
 import { AttributeEdit } from "./products/attributes/AttributeEdit";
+import { ProductSkuList } from "./products/skus/ProductSkuList";
+import { ProductSkuShow } from "./products/skus/ProductSkuShow";
 
 const authProvider = keycloakAuthProvider(keycloak, {
   initOptions: keycloakInitOptions,
@@ -63,9 +65,10 @@ export const App = () => (
     {/* Product SKUs Resource */}
     <Resource
       name="products/skus"
-      list={ListGuesser}
+      list={ProductSkuList}
       edit={EditGuesser}
-      show={ShowGuesser}
+      show={ProductSkuShow}
+      recordRepresentation="sku"
     />
 
     <Resource
@@ -74,6 +77,7 @@ export const App = () => (
       create={AttributeCreate}
       edit={AttributeEdit}
       show={ShowGuesser}
+      recordRepresentation={(record) => `${record.type}: ${record.value}`}
     />
   </Admin>
 );
