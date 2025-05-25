@@ -1,4 +1,3 @@
-import { Box, Typography } from "@mui/material";
 import {
   Edit,
   RadioButtonGroupInput,
@@ -7,15 +6,14 @@ import {
   TextInput,
   useNotify,
 } from "react-admin";
+import { InstructionAside } from "../../components/InstructionAside";
 
-const Aside = () => (
-  <Box sx={{ width: "200px", margin: "1em" }}>
-    <Typography variant="h6">Instructions</Typography>
-    <Typography variant="body2">foo</Typography>
-  </Box>
-);
+const VALUE_REQUIRED = "Product attribute value is required.";
+const VALUE_MAX_LENGTH = "Product attribute value length must less than 255.";
 
-export const AttributeEdit = () => {
+export const ProductAttributeEdit = () => {
+  const instructions = [VALUE_REQUIRED, VALUE_MAX_LENGTH];
+
   const notify = useNotify();
 
   const onError = (error: any) => {
@@ -25,7 +23,12 @@ export const AttributeEdit = () => {
   return (
     <Edit
       title="Attribute Edit"
-      aside={<Aside />}
+      aside={
+        <InstructionAside
+          title="Product attribute instructions"
+          instructions={instructions}
+        />
+      }
       mutationOptions={{ onError }}
     >
       <SimpleForm>
@@ -37,10 +40,7 @@ export const AttributeEdit = () => {
           ]}
           disabled
         />
-        <TextInput
-          source="value"
-          validate={[required("Product attribute value is required")]}
-        />
+        <TextInput source="value" validate={[required(VALUE_REQUIRED)]} />
 
         <TextInput disabled label="Created At" source="createdAt" />
         <TextInput disabled label="Updated At" source="updatedAt" />

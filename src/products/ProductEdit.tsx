@@ -1,22 +1,21 @@
-import { Box, Typography } from "@mui/material";
 import {
   AutocompleteInput,
   Edit,
   ReferenceInput,
   SimpleForm,
   TextInput,
+  maxLength,
   required,
   useNotify,
 } from "react-admin";
+import { InstructionAside } from "../components/InstructionAside";
 
-const Aside = () => (
-  <Box sx={{ width: "200px", margin: "1em" }}>
-    <Typography variant="h6">Instructions</Typography>
-    <Typography variant="body2">foo</Typography>
-  </Box>
-);
+const NAME_MAX_LENGTH = "Product name length must less than 255.";
+const NAME_REQUIRED = "Product name is required.";
 
 export const ProductEdit = () => {
+  const instructions: string[] = [NAME_REQUIRED, NAME_MAX_LENGTH];
+
   const notify = useNotify();
 
   const onError = (error: any) => {
@@ -24,12 +23,21 @@ export const ProductEdit = () => {
   };
 
   return (
-    <Edit title="Product Edit" aside={<Aside />} mutationOptions={{ onError }}>
+    <Edit
+      title="Product Edit"
+      aside={
+        <InstructionAside
+          title="Product instructions"
+          instructions={instructions}
+        />
+      }
+      mutationOptions={{ onError }}
+    >
       <SimpleForm>
         <TextInput disabled label="Id" source="id" />
         <TextInput
           source="name"
-          validate={[required("Product name is required")]}
+          validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
         />
         <TextInput source="summary" />
         <TextInput

@@ -1,29 +1,38 @@
-import {
-  Admin,
-  EditGuesser,
-  ListGuesser,
-  Resource,
-  ShowGuesser,
-} from "react-admin";
+import { Admin, Resource } from "react-admin";
 import { dataProvider } from "./dataProvider";
 import { keycloakAuthProvider } from "ra-keycloak";
 import { keycloak, keycloakInitOptions } from "./keycloakConfig";
 
 import CategoryIcon from "@mui/icons-material/Category";
 import ProductIcon from "@mui/icons-material/Inventory";
-import { Dashboard } from "./Dashboard";
-import { CategoryCreate } from "./categories/CategoryCreate";
-import { CategoryEdit } from "./categories/CategoryEdit";
-import { ProductCreate } from "./products/ProductCreate";
-import { SubcategoryCreate } from "./subcategories/SubcategoryCreate";
-import { SubcategoryEdit } from "./subcategories/SubcategoryEdit";
-import { ProductEdit } from "./products/ProductEdit";
-import { AttributeCreate } from "./products/attributes/AttributeCreate";
-import { AttributeEdit } from "./products/attributes/AttributeEdit";
-import { ProductSkuList } from "./products/skus/ProductSkuList";
-import { ProductSkuShow } from "./products/skus/ProductSkuShow";
-import { ProductSkuCreate } from "./products/skus/ProductSkuCreate";
-import { ProductSkuEdit } from "./products/skus/ProductSkuEdit";
+
+import {
+  SubcategoryCreate,
+  SubcategoryEdit,
+  SubcategoryList,
+  SubcategoryShow,
+} from "./subcategories";
+import {
+  ProductAttributeCreate,
+  ProductAttributeEdit,
+  ProductAttributeList,
+  ProductAttributeShow,
+  ProductCreate,
+  ProductEdit,
+  ProductList,
+  ProductShow,
+  ProductSkuCreate,
+  ProductSkuEdit,
+  ProductSkuList,
+  ProductSkuShow,
+} from "./products";
+import {
+  CategoryCreate,
+  CategoryEdit,
+  CategoryList,
+  CategoryShow,
+} from "./categories";
+import { Dashboard } from "./dashboard";
 
 const authProvider = keycloakAuthProvider(keycloak, {
   initOptions: keycloakInitOptions,
@@ -39,28 +48,28 @@ export const App = () => (
   >
     <Resource
       name="categories"
-      list={ListGuesser}
+      list={CategoryList}
       create={CategoryCreate}
       edit={CategoryEdit}
-      show={ShowGuesser}
+      show={CategoryShow}
       icon={CategoryIcon}
     />
 
     <Resource
       name="subcategories"
-      list={ListGuesser}
+      list={SubcategoryList}
       create={SubcategoryCreate}
       edit={SubcategoryEdit}
-      show={ShowGuesser}
+      show={SubcategoryShow}
     />
 
     {/* Products Resource */}
     <Resource
       name="products"
-      list={ListGuesser}
+      list={ProductList}
       create={ProductCreate}
       edit={ProductEdit}
-      show={ShowGuesser}
+      show={ProductShow}
       icon={ProductIcon}
     />
 
@@ -76,10 +85,10 @@ export const App = () => (
 
     <Resource
       name="products/attributes"
-      list={ListGuesser}
-      create={AttributeCreate}
-      edit={AttributeEdit}
-      show={ShowGuesser}
+      list={ProductAttributeList}
+      create={ProductAttributeCreate}
+      edit={ProductAttributeEdit}
+      show={ProductAttributeShow}
       recordRepresentation={(record) => `${record.type}: ${record.value}`}
     />
   </Admin>

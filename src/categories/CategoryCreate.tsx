@@ -1,20 +1,19 @@
-import { Box, Typography } from "@mui/material";
 import {
   Create,
   SimpleForm,
   TextInput,
+  maxLength,
   required,
   useNotify,
 } from "react-admin";
+import { InstructionAside } from "../components/InstructionAside";
 
-const Aside = () => (
-  <Box sx={{ width: "200px", margin: "1em" }}>
-    <Typography variant="h6">Instructions</Typography>
-    <Typography variant="body2">foo</Typography>
-  </Box>
-);
+const NAME_REQUIRED = "Category name is required.";
+const NAME_MAX_LENGTH = "Category name length must less than 255.";
 
 export const CategoryCreate = () => {
+  const instructions = [NAME_REQUIRED, NAME_MAX_LENGTH];
+
   const notify = useNotify();
 
   const onError = (error: any) => {
@@ -24,13 +23,18 @@ export const CategoryCreate = () => {
   return (
     <Create
       title="Category Creation"
-      aside={<Aside />}
+      aside={
+        <InstructionAside
+          title="Category instruction"
+          instructions={instructions}
+        />
+      }
       mutationOptions={{ onError }}
     >
       <SimpleForm>
         <TextInput
           source="name"
-          validate={[required("Category name is required")]}
+          validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
         />
         <TextInput
           source="description"
