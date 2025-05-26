@@ -1,63 +1,26 @@
 import { DataProvider, fetchUtils } from "react-admin";
-import { keycloak, TokenManager } from "./keycloakConfig";
+import { TokenManager } from "./keycloakConfig";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Custom httpClient to add Token header instead of Bearer
-const httpClient = async (
-  url: string,
-  options: fetchUtils.Options = {},
-): Promise<{ status: number; headers: Headers; body: string; json: any }> => {
-  const tokenManager = TokenManager.getInstance();
-
-  // setup headers
+const httpClient = async (url: string, options: fetchUtils.Options = {}) => {
   if (!options.headers) {
     options.headers = new Headers({ Accept: "application/json" });
   }
 
-  // ensure we have a valid token before making the request
-  try {
-    if (keycloak.authenticated) {
-      const token = await tokenManager.ensureValidToken();
-      if (token) {
-        (options.headers as Headers).set("Authorization", `Token ${token}`);
-      }
-    } else {
-      throw new Error("User not authenticated");
-    }
-  } catch (error) {
-    console.error("Token validation failed before request: ", error);
-    throw new Error("Authentication required");
-  }
+  // Add token
+  const token = await TokenManager.getInstance().getValidToken();
+  (options.headers as Headers).set("Authorization", `Token ${token}`);
 
-  // making the initial request
   try {
     return fetchUtils.fetchJson(url, options);
   } catch (error: any) {
+    // Retry on 401
     if (error.status === 401) {
-      console.log("Received 401, attempting token refresh and retry...");
-
-      try {
-        // Force refresh the token
-        const refreshedToken = await tokenManager.ensureValidToken(0);
-
-        if (refreshedToken) {
-          (options.headers as Headers).set(
-            "Authorization",
-            `Token ${refreshedToken}`,
-          );
-
-          console.log("Retrying request with refreshed token ...");
-          return await fetchUtils.fetchJson(url, options);
-        } else {
-          throw new Error("Failed to refresh token");
-        }
-      } catch (refreshError) {
-        console.error("Token refresh failed on 401 retry: ", refreshError);
-        // If refresh fails, logout the user
-        keycloak.logout();
-        throw new Error("Session expired. Please login again.");
-      }
+      const newToken = await TokenManager.getInstance().getValidToken();
+      (options.headers as Headers).set("Authorization", `Token ${newToken}`);
+      return await fetchUtils.fetchJson(url, options);
     }
     throw error;
   }
@@ -78,60 +41,27 @@ export const dataProvider: DataProvider = {
       ...filter,
     };
 
-    try {
-      const url = `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`;
-      const { json } = await httpClient(url);
+    const { json } = await httpClient(
+      `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`,
+    );
 
-      // handle different response structures
-      if (json.content !== undefined) {
-        // Spring Boot pagination: { content: [], totalElements: number }
-        return {
-          data: json.content,
-          total: json.page?.totalElements ?? json.totalElements ?? 0,
-        };
-      } else if (Array.isArray(json)) {
-        // simple array format
-        return {
-          data: json,
-          total: json.length,
-        };
-      } else {
-        // fallback
-        return {
-          data: [],
-          total: 0,
-        };
-      }
-    } catch (error) {
-      console.error(`Error fetching ${resource} list: `, error);
-      throw error;
-    }
+    // Spring Boot pagination: { content: [], totalElements: number }
+    return {
+      data: json.content,
+      total: json.page.totalElements,
+    };
   },
 
   getOne: async (resource, params) => {
-    try {
-      const url = `${API_URL}/${resource}/${params.id}`;
-      const { json } = await httpClient(url);
-      return { data: json };
-    } catch (error) {
-      console.error(`Error fetching ${resource} with id ${params.id}: `, error);
-      throw error;
-    }
+    const { json } = await httpClient(`${API_URL}/${resource}/${params.id}`);
+    return { data: json };
   },
 
   getMany: async (resource, params) => {
-    try {
-      const query = {
-        id: params.ids,
-      };
-
-      const url = `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`;
-      const { json } = await httpClient(url);
-      return { data: json.content || json || [] };
-    } catch (error: any) {
-      console.error(`Error fetching multiple ${resource}:`, error);
-      throw error;
-    }
+    const { json } = await httpClient(
+      `${API_URL}/${resource}?${fetchUtils.queryParameters({ id: params.ids })}`,
+    );
+    return { data: json.content || json };
   },
 
   getManyReference: async (resource, params) => {
@@ -145,95 +75,53 @@ export const dataProvider: DataProvider = {
       ...params.filter,
     };
 
-    try {
-      const url = `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`;
-      const { json } = await httpClient(url);
+    const { json } = await httpClient(
+      `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`,
+    );
 
-      return {
-        data: json.content || [],
-        total: json.page?.totalElements ?? json.totalElements ?? 0,
-      };
-    } catch (error) {
-      console.error(`Error fetching ${resource} references:`, error);
-      throw error;
-    }
+    return {
+      data: json.content || [],
+      total: json.page.totalElements || 0,
+    };
   },
 
   create: async (resource, params) => {
-    try {
-      const { json } = await httpClient(`${API_URL}/${resource}`, {
-        method: "POST",
-        body: JSON.stringify(params.data),
-      });
-      console.log(`Created ${resource}:`, json);
-      return { data: json };
-    } catch (error: any) {
-      console.error(`Error creating ${resource}:`, error);
-      throw error;
-    }
+    const { json } = await httpClient(`${API_URL}/${resource}`, {
+      method: "POST",
+      body: JSON.stringify(params.data),
+    });
+    return { data: json };
   },
 
   update: async (resource, params) => {
-    try {
-      const url = `${API_URL}/${resource}/${params.id}`;
-      const { json } = await httpClient(url, {
-        method: "PUT",
-        body: JSON.stringify(params.data),
-      });
-      console.log(`Updated ${resource} with id ${params.id}:`, json);
-      return { data: json };
-    } catch (error: any) {
-      console.error(`Error updating ${resource} with id ${params.id}:`, error);
-      throw error;
-    }
+    const { json } = await httpClient(`${API_URL}/${resource}/${params.id}`, {
+      method: "PUT",
+      body: JSON.stringify(params.data),
+    });
+    return { data: json };
   },
 
   updateMany: async (resource, params) => {
-    try {
-      const query = {
-        id: params.ids,
-      };
-      const url = `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`;
-      await httpClient(url, {
+    await httpClient(
+      `${API_URL}/${resource}?${fetchUtils.queryParameters({ id: params.ids })}`,
+      {
         method: "PUT",
         body: JSON.stringify(params.data),
-      });
-      console.log(`Updated multiple ${resource}:`, params.ids);
-      return { data: params.ids };
-    } catch (error: any) {
-      console.error(`Error updating multiple ${resource}:`, error);
-      throw error;
-    }
+      },
+    );
+    return { data: params.ids };
   },
 
   delete: async (resource, params) => {
-    try {
-      const url = `${API_URL}/${resource}/${params.id}`;
-      await httpClient(url, {
-        method: "DELETE",
-      });
-      console.log(`Deleted resource ${resource} with id ${params.id}`);
-      return { data: params.previousData as any };
-    } catch (error: any) {
-      console.error(`Error deleting resource ${resource} with id ${params.id}`);
-      throw error;
-    }
+    await httpClient(`${API_URL}/${resource}/${params.id}`, {
+      method: "DELETE",
+    });
+    return { data: params.previousData as any };
   },
 
   deleteMany: async (resource, params) => {
-    try {
-      const query = {
-        id: params.ids,
-      };
-      const url = `${API_URL}/${resource}?${fetchUtils.queryParameters(query)}`;
-      await httpClient(url, {
-        method: "DELETE",
-      });
-      console.log(`Deleted multiple ${resource}: `, params.ids);
-      return { data: params.ids };
-    } catch (error) {
-      console.error(`Error deleting multiple ${resource}: `, error);
-      throw error;
-    }
+    const url = `${API_URL}/${resource}?${fetchUtils.queryParameters({ id: params.ids })}`;
+    await httpClient(url, { method: "DELETE" });
+    return { data: params.ids };
   },
 };

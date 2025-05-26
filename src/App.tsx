@@ -2,7 +2,7 @@ import { Admin, Loading, Resource } from "react-admin";
 import { dataProvider } from "./dataProvider";
 import { keycloakAuthProvider } from "ra-keycloak";
 import {
-  initializeKeycloak,
+  initKeycloak,
   keycloak,
   keycloakInitOptions,
   TokenManager,
@@ -45,67 +45,31 @@ const authProvider = keycloakAuthProvider(keycloak, {
 });
 
 export const App = () => {
-  const [isKeycloakReady, setIsKeycloakReady] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        console.log("Initializing Keycloak...");
-        await initializeKeycloak();
-        setIsKeycloakReady(true);
-        console.log("Keycloak initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize Keycloak:", error);
-        setAuthError(
-          "Failed to initialize authentication. Please refresh the page.",
-        );
-      }
-    };
+    initKeycloak()
+      .then(() => setReady(true))
+      .catch((e) => setError("Auth failed: " + e.message));
 
-    initAuth();
-
-    // Cleanup token refresh timer on unmount
-    return () => {
-      const tokenManager = TokenManager.getInstance();
-      tokenManager.stopTokenRefreshTimer();
-    };
+    return () => TokenManager.getInstance().stopAutoRefresh();
   }, []);
 
-  // Show loading screen while Keycloak is initializing
-  if (!isKeycloakReady) {
-    if (authError) {
-      return (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-        >
-          <h2>Authentication Error</h2>
-          <p>{authError}</p>
-          <button onClick={() => window.location.reload()}>Refresh Page</button>
-        </div>
-      );
-    }
-
+  if (error) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          flexDirection: "column",
-          gap: "20px",
-        }}
-      >
+      <div style={{ padding: "50px", textAlign: "center" }}>
+        <h2>Error: {error}</h2>
+        <button onClick={() => location.reload()}>Reload</button>
+      </div>
+    );
+  }
+
+  if (!ready) {
+    return (
+      <div style={{ padding: "50px", textAlign: "center" }}>
         <Loading />
-        <h3>Initializing authentication...</h3>
+        <p>Initializing authentication...</p>
       </div>
     );
   }
