@@ -105,7 +105,7 @@ export const App = () => {
         }}
       >
         <Loading />
-        <p>Initializing authentication...</p>
+        <h3>Initializing authentication...</h3>
       </div>
     );
   }
