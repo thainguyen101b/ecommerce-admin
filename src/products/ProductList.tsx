@@ -1,14 +1,31 @@
 import {
-  Datagrid,
+  CreateButton,
+  DatagridConfigurable,
   DateField,
+  ExportButton,
+  FilterButton,
   List,
   ReferenceField,
+  SearchInput,
+  SelectColumnsButton,
   TextField,
+  TopToolbar,
 } from "react-admin";
 
+const ProductListActions = () => (
+  <TopToolbar>
+    <SelectColumnsButton />
+    <FilterButton />
+    <CreateButton />
+    <ExportButton />
+  </TopToolbar>
+);
+
+const productFilters = [<SearchInput source="q" alwaysOn />];
+
 export const ProductList = () => (
-  <List>
-    <Datagrid>
+  <List actions={<ProductListActions />} filters={productFilters}>
+    <DatagridConfigurable>
       <TextField source="id" />
       <TextField source="name" />
       <ReferenceField source="subcategoryId" reference="subcategories">
@@ -19,6 +36,6 @@ export const ProductList = () => (
       <TextField source="covers" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
-    </Datagrid>
+    </DatagridConfigurable>
   </List>
 );

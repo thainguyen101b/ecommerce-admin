@@ -5,10 +5,16 @@ import {
   Show,
   SimpleShowLayout,
   TextField,
+  useRecordContext,
 } from "react-admin";
 
+const ProductSkuTitle = () => {
+  const record = useRecordContext();
+  return <span>{record ? `Product SKU ${record.sku}` : "Product SKU"}</span>;
+};
+
 export const ProductSkuShow = () => (
-  <Show>
+  <Show title={<ProductSkuTitle />}>
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField source="sku" />

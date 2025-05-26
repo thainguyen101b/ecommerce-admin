@@ -152,7 +152,6 @@ export const App = () => {
         create={ProductSkuCreate}
         edit={ProductSkuEdit}
         show={ProductSkuShow}
-        recordRepresentation="sku"
       />
 
       <Resource
@@ -161,7 +160,6 @@ export const App = () => {
         create={ProductAttributeCreate}
         edit={ProductAttributeEdit}
         show={ProductAttributeShow}
-        recordRepresentation={(record) => `${record.type}: ${record.value}`}
       />
     </Admin>
   );

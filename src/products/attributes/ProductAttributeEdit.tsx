@@ -24,7 +24,7 @@ export const ProductAttributeEdit = () => {
 
   return (
     <Edit
-      title="Attribute Edit"
+      title="Product Attribute Edit"
       aside={
         <InstructionAside
           title="Product attribute instructions"
