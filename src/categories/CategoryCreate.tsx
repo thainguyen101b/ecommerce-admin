@@ -17,7 +17,7 @@ export const CategoryCreate = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not create category: ${error.message}`);
+    notify(`Could not create category: ${error.message}`, { type: "error" });
   };
 
   return (

@@ -1,15 +1,36 @@
 import {
-  Datagrid,
+  CreateButton,
+  DatagridConfigurable,
   DateField,
+  ExportButton,
   List,
   NumberField,
+  Pagination,
   ReferenceField,
+  SelectColumnsButton,
   TextField,
+  TopToolbar,
 } from "react-admin";
 
+const PostPagination = () => (
+  <Pagination rowsPerPageOptions={[10, 25, 50, 100]} />
+);
+
+const ProductSkuListActions = () => (
+  <TopToolbar>
+    <SelectColumnsButton />
+    <CreateButton />
+    <ExportButton />
+  </TopToolbar>
+);
+
 export const ProductSkuList = () => (
-  <List>
-    <Datagrid>
+  <List
+    pagination={<PostPagination />}
+    title="Product SKU"
+    actions={<ProductSkuListActions />}
+  >
+    <DatagridConfigurable>
       <TextField source="id" />
       <TextField source="sku" />
       <NumberField source="price" />
@@ -38,6 +59,6 @@ export const ProductSkuList = () => (
       <TextField source="covers" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
-    </Datagrid>
+    </DatagridConfigurable>
   </List>
 );

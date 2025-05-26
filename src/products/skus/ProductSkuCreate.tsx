@@ -32,7 +32,9 @@ export const ProductSkuCreate = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not create product attribute: ${error.message}`);
+    notify(`Could not create product attribute: ${error.message}`, {
+      type: "error",
+    });
   };
 
   return (

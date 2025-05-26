@@ -1,7 +1,24 @@
-import { DateField, Show, SimpleShowLayout, TextField } from "react-admin";
+import {
+  DateField,
+  Show,
+  SimpleShowLayout,
+  TextField,
+  useRecordContext,
+} from "react-admin";
+
+const ProductAttributeTitle = () => {
+  const record = useRecordContext();
+  return (
+    <span>
+      {record
+        ? `Product Attribute ${record.type}: ${record.value}`
+        : "Product Attribute"}
+    </span>
+  );
+};
 
 export const ProductAttributeShow = () => (
-  <Show>
+  <Show title={<ProductAttributeTitle />}>
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField source="type" />
