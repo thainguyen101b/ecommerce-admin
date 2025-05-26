@@ -17,7 +17,7 @@ export const CategoryEdit = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit category: ${error.message}`);
+    notify(`Could not edit category: ${error.message}`, { type: "error" });
   };
 
   return (

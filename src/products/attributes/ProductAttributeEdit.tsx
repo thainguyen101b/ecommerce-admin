@@ -17,7 +17,9 @@ export const ProductAttributeEdit = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit product attribute: ${error.message}`);
+    notify(`Could not edit product attribute: ${error.message}`, {
+      type: "error",
+    });
   };
 
   return (

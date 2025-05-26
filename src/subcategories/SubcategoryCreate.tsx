@@ -19,7 +19,7 @@ export const SubcategoryCreate = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not create subcategory: ${error.message}`);
+    notify(`Could not create subcategory: ${error.message}`, { type: "error" });
   };
 
   return (

@@ -19,7 +19,7 @@ export const SubcategoryEdit = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit subcategory: ${error.message}`);
+    notify(`Could not edit subcategory: ${error.message}`, { type: "error" });
   };
 
   return (

@@ -19,7 +19,7 @@ export const ProductEdit = () => {
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit product: ${error.message}`);
+    notify(`Could not edit product: ${error.message}`, { type: "error" });
   };
 
   return (
