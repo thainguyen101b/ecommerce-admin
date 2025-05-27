@@ -1,41 +1,15 @@
-import {
-  Create,
-  SimpleForm,
-  TextInput,
-  maxLength,
-  required,
-  useNotify,
-} from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside.tsx";
-
-const NAME_REQUIRED = "Category name is required.";
-const NAME_MAX_LENGTH = "Category name length must less than 255.";
+import { Create, SimpleForm, TextInput } from "react-admin";
+import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
 
 export const CategoryCreate = () => {
-  const instructions = [NAME_REQUIRED, NAME_MAX_LENGTH];
-
-  const notify = useNotify();
-
-  const onError = (error: any) => {
-    notify(`Could not create category: ${error.message}`, { type: "error" });
-  };
+  const mutationOptions = useEnhancedMutationOptions({
+    defaultErrorMessage: "Could not create category",
+  });
 
   return (
-    <Create
-      title="Category Creation"
-      aside={
-        <InstructionAside
-          title="Category instruction"
-          instructions={instructions}
-        />
-      }
-      mutationOptions={{ onError }}
-    >
+    <Create title="Category Creation" mutationOptions={mutationOptions}>
       <SimpleForm>
-        <TextInput
-          source="name"
-          validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
-        />
+        <TextInput source="name" />
         <TextInput
           source="description"
           multiline={true}
