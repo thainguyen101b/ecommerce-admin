@@ -1,18 +1,24 @@
 import { useMemo } from "react";
-import { useApiErrorHandler } from "../utils/errorHandler";
+import { useNotify } from "react-admin";
 
 interface EnhancedMutationOptions {
+  handleApiError: (error: any, defaultMessage?: string) => void;
   onError?: (error: any) => void;
+  onSuccess?: (data?: any) => void;
+  onSettled?: (data?: any, error?: any) => void;
   successMessage?: string;
   defaultErrorMessage?: string;
 }
 
 export const useEnhancedMutationOptions = ({
+  handleApiError,
   onError,
+  onSuccess,
+  onSettled,
   successMessage,
   defaultErrorMessage,
-}: EnhancedMutationOptions = {}) => {
-  const { handleApiError } = useApiErrorHandler();
+}: EnhancedMutationOptions) => {
+  const notify = useNotify();
 
   return useMemo(
     () => ({
@@ -25,12 +31,32 @@ export const useEnhancedMutationOptions = ({
           onError(error);
         }
       },
-      onSuccess: successMessage
-        ? () => {
-            // You can add success notification here if needed
-          }
-        : undefined,
+      onSuccess: (data?: any) => {
+        // Show success message if provided
+        if (successMessage) {
+          notify(successMessage, { type: "success" });
+        }
+
+        // Call custom onSuccess if provided
+        if (onSuccess) {
+          onSuccess(data);
+        }
+      },
+      onSettled: (data?: any, error?: any) => {
+        // Call custom onSettled if provided
+        if (onSettled) {
+          onSettled(data, error);
+        }
+      },
     }),
-    [handleApiError, onError, defaultErrorMessage, successMessage],
+    [
+      handleApiError,
+      notify,
+      onError,
+      onSuccess,
+      onSettled,
+      defaultErrorMessage,
+      successMessage,
+    ],
   );
 };

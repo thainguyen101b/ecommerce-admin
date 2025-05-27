@@ -1,5 +1,5 @@
 import { useNotify } from "react-admin";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { ApiError, ValidationError, FieldError } from "../types/errors";
 
 // Utility to check if error is validation error
@@ -12,38 +12,28 @@ export const isValidationError = (
 // Hook for handling API errors
 export const useApiErrorHandler = () => {
   const notify = useNotify();
+  const [validationErrors, setValidationErrors] = useState<FieldError[]>([]);
+  const [showValidationDialog, setShowValidationDialog] = useState(false);
 
-  const showValidationErrorDialog = useCallback(
-    (fieldErrors: FieldError[]) => {
-      // Create formatted error message for popup
-      const errorMessages = fieldErrors
-        .map((error) => `• ${error.property}: ${error.message}`)
-        .join("\n");
+  const showValidationErrorDialog = useCallback((fieldErrors: FieldError[]) => {
+    setValidationErrors(fieldErrors);
+    setShowValidationDialog(true);
+  }, []);
 
-      const fullMessage = `Validation Failed:\n\n${errorMessages}`;
-
-      // Show as error notification with longer duration for popup-like effect
-      notify(fullMessage, {
-        type: "error",
-        messageArgs: {
-          multiline: true,
-          autoHideDuration: 8000, // Longer duration for validation errors
-        },
-      });
-    },
-    [notify],
-  );
+  const hideValidationDialog = useCallback(() => {
+    setShowValidationDialog(false);
+    setValidationErrors([]);
+  }, []);
 
   const handleApiError = useCallback(
     (error: any, defaultMessage?: string) => {
-      console.log("error keys:", JSON.stringify(error));
       try {
         // Parse error if it's from HTTP response
         const apiError: ApiError =
           error?.body || error?.response?.data || error;
 
         if (isValidationError(apiError)) {
-          // Show detailed validation errors in popup-style
+          // Show detailed validation errors in custom dialog
           showValidationErrorDialog(apiError.fieldErrors);
         } else {
           // Show general server error message
@@ -61,5 +51,10 @@ export const useApiErrorHandler = () => {
     [notify, showValidationErrorDialog],
   );
 
-  return { handleApiError };
+  return {
+    handleApiError,
+    validationErrors,
+    showValidationDialog,
+    hideValidationDialog,
+  };
 };
