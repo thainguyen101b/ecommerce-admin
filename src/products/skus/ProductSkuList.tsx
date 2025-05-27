@@ -7,6 +7,7 @@ import {
   NumberField,
   Pagination,
   ReferenceField,
+  SearchInput,
   SelectColumnsButton,
   TextField,
   TopToolbar,
@@ -24,11 +25,14 @@ const ProductSkuListActions = () => (
   </TopToolbar>
 );
 
+const productSkuFilters = [<SearchInput source="q" alwaysOn />];
+
 export const ProductSkuList = () => (
   <List
     pagination={<PostPagination />}
     title="Product SKU"
     actions={<ProductSkuListActions />}
+    filters={productSkuFilters}
   >
     <DatagridConfigurable>
       <TextField source="id" />

@@ -10,14 +10,19 @@ import {
 
 import CategoryIcon from "@mui/icons-material/Category";
 import ProductIcon from "@mui/icons-material/Inventory";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
+  InactiveSubcategoryList,
   SubcategoryCreate,
   SubcategoryEdit,
   SubcategoryList,
   SubcategoryShow,
 } from "./subcategories";
 import {
+  InactiveProductAttributeList,
+  InactiveProductList,
+  InactiveProductSkuList,
   ProductAttributeCreate,
   ProductAttributeEdit,
   ProductAttributeList,
@@ -36,6 +41,7 @@ import {
   CategoryEdit,
   CategoryList,
   CategoryShow,
+  InactiveCategoryList,
 } from "./categories";
 import { Dashboard } from "./dashboard";
 import { useEffect, useState } from "react";
@@ -92,6 +98,13 @@ export const App = () => {
       />
 
       <Resource
+        name="categories/inactive"
+        list={InactiveCategoryList}
+        icon={DeleteIcon}
+        options={{ label: "Inactive Categories" }}
+      />
+
+      <Resource
         name="subcategories"
         list={SubcategoryList}
         create={SubcategoryCreate}
@@ -99,7 +112,13 @@ export const App = () => {
         show={SubcategoryShow}
       />
 
-      {/* Products Resource */}
+      <Resource
+        name="subcategories/inactive"
+        list={InactiveSubcategoryList}
+        icon={DeleteIcon}
+        options={{ label: "Inactive Subcategories" }}
+      />
+
       <Resource
         name="products"
         list={ProductList}
@@ -109,13 +128,27 @@ export const App = () => {
         icon={ProductIcon}
       />
 
-      {/* Product SKUs Resource */}
+      <Resource
+        name="products/inactive"
+        list={InactiveProductList}
+        icon={DeleteIcon}
+        options={{ label: "Inactive Products" }}
+      />
+
       <Resource
         name="products/skus"
         list={ProductSkuList}
         create={ProductSkuCreate}
         edit={ProductSkuEdit}
         show={ProductSkuShow}
+        options={{ label: "Product SKUs" }}
+      />
+
+      <Resource
+        name="products/skus/inactive"
+        list={InactiveProductSkuList}
+        icon={DeleteIcon}
+        options={{ label: "Inactive Product SKUs" }}
       />
 
       <Resource
@@ -124,6 +157,14 @@ export const App = () => {
         create={ProductAttributeCreate}
         edit={ProductAttributeEdit}
         show={ProductAttributeShow}
+        options={{ label: "Product Attributes" }}
+      />
+
+      <Resource
+        name="products/attributes/inactive"
+        list={InactiveProductAttributeList}
+        icon={DeleteIcon}
+        options={{ label: "Inactive Product Attributes" }}
       />
     </Admin>
   );

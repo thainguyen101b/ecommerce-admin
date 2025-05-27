@@ -26,8 +26,17 @@ const httpClient = async (url: string, options: fetchUtils.Options = {}) => {
   }
 };
 
+// Extended DataProvider interface with custom methods
+export interface ExtendedDataProvider extends DataProvider {
+  restoreOne: (resource: string, params: { id: any }) => Promise<{ data: any }>;
+  restoreMany: (
+    resource: string,
+    params: { ids: any[] },
+  ) => Promise<{ data: any[] }>;
+}
+
 // Custom data provider for Spring Boot pagination format
-export const dataProvider: DataProvider = {
+export const dataProvider: ExtendedDataProvider = {
   getList: async (resource, params) => {
     const { pagination, sort, filter } = params;
     const page = pagination?.page ?? 1;
@@ -123,5 +132,27 @@ export const dataProvider: DataProvider = {
     const url = `${API_URL}/${resource}?${fetchUtils.queryParameters({ id: params.ids })}`;
     await httpClient(url, { method: "DELETE" });
     return { data: params.ids };
+  },
+
+  // Custom restore methods
+  restoreOne: async (resource, params) => {
+    const { json } = await httpClient(
+      `${API_URL}/${resource}/${params.id}/restore`,
+      {
+        method: "POST",
+      },
+    );
+    return { data: json || { id: params.id, restored: true } };
+  },
+
+  restoreMany: async (resource, params) => {
+    const queryParams = params.ids.map((id) => `id=${id}`).join("&");
+    const { json } = await httpClient(
+      `${API_URL}/${resource}/restore?${queryParams}`,
+      {
+        method: "POST",
+      },
+    );
+    return { data: json || params.ids.map((id) => ({ id, restored: true })) };
   },
 };
