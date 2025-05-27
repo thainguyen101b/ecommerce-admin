@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,13 +5,14 @@ import {
   DialogActions,
   Button,
   Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Alert,
+  AlertTitle,
+  Stack,
+  Chip,
   Box,
+  IconButton,
 } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { FieldError } from "../types/errors";
 
 interface ValidationErrorDialogProps {
@@ -22,84 +22,125 @@ interface ValidationErrorDialogProps {
   title?: string;
 }
 
-export const ValidationErrorDialog: React.FC<ValidationErrorDialogProps> = ({
+export const ValidationErrorDialog = ({
   open,
   onClose,
   fieldErrors,
   title = "Validation Failed",
-}) => {
+}: ValidationErrorDialogProps) => {
+  // Nhóm errors theo field để hiển thị gọn hơn
+  const groupedErrors = fieldErrors.reduce(
+    (acc, error) => {
+      if (!acc[error.property]) {
+        acc[error.property] = [];
+      }
+      acc[error.property].push(error);
+      return acc;
+    },
+    {} as Record<string, FieldError[]>,
+  );
+
+  const fieldNames = Object.keys(groupedErrors);
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
-          minHeight: "300px",
-          maxHeight: "80vh",
+          borderRadius: 2,
+          maxHeight: "70vh",
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Box display="flex" alignItems="center" gap={1}>
-          <ErrorIcon color="error" />
-          <Typography variant="h6" component="span">
-            {title}
-          </Typography>
-        </Box>
+      <DialogTitle sx={{ pb: 1, pr: 6 }}>
+        <Typography variant="h6" component="div" color="error.main">
+          {title}
+        </Typography>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ py: 2 }}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Please correct the following errors and try again:
+          Please fix the following {fieldNames.length} field
+          {fieldNames.length > 1 ? "s" : ""}:
         </Typography>
 
-        <List dense>
-          {fieldErrors.map((error, index) => (
-            <ListItem key={index} sx={{ py: 1 }}>
-              <ListItemIcon sx={{ minWidth: "24px" }}>
-                <ErrorIcon fontSize="small" color="error" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {error.property.charAt(0).toUpperCase() +
-                      error.property.slice(1)}
-                  </Typography>
-                }
-                secondary={
-                  <Typography variant="body2" color="text.secondary">
-                    {error.message}
-                    {error.rejectedValue && (
-                      <Typography
-                        component="span"
-                        variant="caption"
-                        display="block"
-                        sx={{ mt: 0.5, fontStyle: "italic" }}
-                      >
-                        Current value: "
-                        {String(error.rejectedValue).substring(0, 50)}
-                        {String(error.rejectedValue).length > 50 ? "..." : ""}"
+        <Stack spacing={2}>
+          {fieldNames.map((fieldName) => {
+            const errors = groupedErrors[fieldName];
+            const fieldLabel =
+              fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+
+            return (
+              <Alert
+                key={fieldName}
+                severity="error"
+                variant="outlined"
+                sx={{
+                  borderRadius: 1,
+                  "& .MuiAlert-message": { width: "100%" },
+                }}
+              >
+                <AlertTitle
+                  sx={{ mb: 1, fontSize: "0.875rem", fontWeight: 600 }}
+                >
+                  {fieldLabel}
+                </AlertTitle>
+
+                <Stack spacing={1}>
+                  {errors.map((error, index) => (
+                    <Box key={index}>
+                      <Typography variant="body2" sx={{ mb: 0.5 }}>
+                        {error.message}
                       </Typography>
-                    )}
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
+
+                      {error.rejectedValue && (
+                        <Chip
+                          label={`Current: "${String(error.rejectedValue).substring(0, 30)}${
+                            String(error.rejectedValue).length > 30 ? "..." : ""
+                          }"`}
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                          sx={{
+                            fontSize: "0.75rem",
+                            height: "20px",
+                            "& .MuiChip-label": { px: 1 },
+                          }}
+                        />
+                      )}
+                    </Box>
+                  ))}
+                </Stack>
+              </Alert>
+            );
+          })}
+        </Stack>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions sx={{ p: 2, justifyContent: "center" }}>
         <Button
           onClick={onClose}
           variant="contained"
           color="primary"
-          size="large"
-          sx={{ minWidth: "120px" }}
+          size="medium"
+          sx={{ minWidth: 100, borderRadius: 1.5 }}
         >
-          I Understand
+          Got it
         </Button>
       </DialogActions>
     </Dialog>
