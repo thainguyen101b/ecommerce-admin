@@ -8,7 +8,7 @@ import {
   required,
   useNotify,
 } from "react-admin";
-import { InstructionAside } from "../components/InstructionAside";
+import { InstructionAside } from "../../components/InstructionAside.tsx";
 
 const NAME_MAX_LENGTH = "Product name length must less than 255.";
 const NAME_REQUIRED = "Product name is required.";

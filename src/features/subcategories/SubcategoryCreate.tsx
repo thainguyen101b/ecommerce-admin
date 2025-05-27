@@ -1,6 +1,6 @@
 import {
   AutocompleteInput,
-  Edit,
+  Create,
   ReferenceInput,
   SimpleForm,
   TextInput,
@@ -8,23 +8,23 @@ import {
   required,
   useNotify,
 } from "react-admin";
-import { InstructionAside } from "../components/InstructionAside";
+import { InstructionAside } from "../../components/InstructionAside.tsx";
 
 const NAME_REQUIRED = "Subcategory name is required.";
 const NAME_MAX_LENGTH = "Subcategory name length must less than 255.";
 
-export const SubcategoryEdit = () => {
+export const SubcategoryCreate = () => {
   const instructions = [NAME_REQUIRED, NAME_MAX_LENGTH];
 
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit subcategory: ${error.message}`, { type: "error" });
+    notify(`Could not create subcategory: ${error.message}`, { type: "error" });
   };
 
   return (
-    <Edit
-      title="Subcategory Edit"
+    <Create
+      title="Subcategory Creation"
       aside={
         <InstructionAside
           title="Subcategory instructions"
@@ -34,7 +34,6 @@ export const SubcategoryEdit = () => {
       mutationOptions={{ onError }}
     >
       <SimpleForm>
-        <TextInput disabled label="Id" source="id" />
         <TextInput
           source="name"
           validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
@@ -54,10 +53,7 @@ export const SubcategoryEdit = () => {
             helperText="Type to search category"
           />
         </ReferenceInput>
-
-        <TextInput disabled label="Created At" source="createdAt" />
-        <TextInput disabled label="Updated At" source="updatedAt" />
       </SimpleForm>
-    </Edit>
+    </Create>
   );
 };

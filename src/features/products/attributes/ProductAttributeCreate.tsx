@@ -1,30 +1,32 @@
 import {
-  Edit,
+  Create,
+  maxLength,
   RadioButtonGroupInput,
   required,
   SimpleForm,
   TextInput,
   useNotify,
 } from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside";
+import { InstructionAside } from "../../../components/InstructionAside.tsx";
 
 const VALUE_REQUIRED = "Product attribute value is required.";
+const TYPE_REQUIRED = "Product attribute type is required.";
 const VALUE_MAX_LENGTH = "Product attribute value length must less than 255.";
 
-export const ProductAttributeEdit = () => {
-  const instructions = [VALUE_REQUIRED, VALUE_MAX_LENGTH];
+export const ProductAttributeCreate = () => {
+  const instructions = [VALUE_REQUIRED, TYPE_REQUIRED, VALUE_MAX_LENGTH];
 
   const notify = useNotify();
 
   const onError = (error: any) => {
-    notify(`Could not edit product attribute: ${error.message}`, {
+    notify(`Could not create product attribute: ${error.message}`, {
       type: "error",
     });
   };
 
   return (
-    <Edit
-      title="Product Attribute Edit"
+    <Create
+      title="Attribute Creation"
       aside={
         <InstructionAside
           title="Product attribute instructions"
@@ -40,13 +42,16 @@ export const ProductAttributeEdit = () => {
             { id: "COLOR", name: "Color" },
             { id: "SIZE", name: "Size" },
           ]}
-          disabled
+          validate={[required(TYPE_REQUIRED)]}
         />
-        <TextInput source="value" validate={[required(VALUE_REQUIRED)]} />
-
-        <TextInput disabled label="Created At" source="createdAt" />
-        <TextInput disabled label="Updated At" source="updatedAt" />
+        <TextInput
+          source="value"
+          validate={[
+            required(VALUE_REQUIRED),
+            maxLength(255, VALUE_MAX_LENGTH),
+          ]}
+        />
       </SimpleForm>
-    </Edit>
+    </Create>
   );
 };

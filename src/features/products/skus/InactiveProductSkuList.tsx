@@ -1,5 +1,5 @@
 import { DateField, NumberField, ReferenceField, TextField } from "react-admin";
-import { InactiveList } from "../../components/InactiveList";
+import { InactiveList } from "../../../components/InactiveList.tsx";
 
 export const InactiveProductSkuList = () => (
   <InactiveList resource="products/skus/inactive" title="Inactive Product SKUs">

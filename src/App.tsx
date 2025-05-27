@@ -18,7 +18,7 @@ import {
   SubcategoryEdit,
   SubcategoryList,
   SubcategoryShow,
-} from "./subcategories";
+} from "./features/subcategories";
 import {
   InactiveProductAttributeList,
   InactiveProductList,
@@ -35,15 +35,15 @@ import {
   ProductSkuEdit,
   ProductSkuList,
   ProductSkuShow,
-} from "./products";
+} from "./features/products";
 import {
   CategoryCreate,
   CategoryEdit,
   CategoryList,
   CategoryShow,
   InactiveCategoryList,
-} from "./categories";
-import { Dashboard } from "./dashboard";
+} from "./features/categories";
+import { Dashboard } from "./features/dashboard";
 import { useEffect, useState } from "react";
 
 const authProvider = keycloakAuthProvider(keycloak, {

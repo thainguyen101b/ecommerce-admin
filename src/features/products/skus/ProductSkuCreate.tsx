@@ -1,15 +1,16 @@
 import {
   AutocompleteInput,
-  DateInput,
-  Edit,
+  Create,
+  maxLength,
   minValue,
   NumberInput,
   ReferenceInput,
   required,
   SimpleForm,
   TextInput,
+  useNotify,
 } from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside";
+import { InstructionAside } from "../../../components/InstructionAside.tsx";
 
 const SKU_REQUIRED = "ProductSku sku is required.";
 const SKU_MAX_LENGTH = "ProductSku sku length must less than 255.";
@@ -18,7 +19,7 @@ const PRICE_NEGATIVE = "Price cannot be negative.";
 const QUANTITY_REQUIRED = "ProductSku quantity is required.";
 const QUANTITY_MIN = "ProductSku quantity is must greater or equal than 1";
 
-export const ProductSkuEdit = () => {
+export const ProductSkuCreate = () => {
   const instructions = [
     SKU_REQUIRED,
     SKU_MAX_LENGTH,
@@ -28,19 +29,31 @@ export const ProductSkuEdit = () => {
     QUANTITY_MIN,
   ];
 
+  const notify = useNotify();
+
+  const onError = (error: any) => {
+    notify(`Could not create product attribute: ${error.message}`, {
+      type: "error",
+    });
+  };
+
   return (
-    <Edit
-      title="Product Sku Edit"
+    <Create
+      title="Product Sku Creation"
       aside={
         <InstructionAside
-          title="Product Sku Edit instruction"
+          title="Product sku instructions"
           instructions={instructions}
         />
       }
+      mutationOptions={{ onError }}
     >
       <SimpleForm>
-        <TextInput disabled source="id" label="Id" />
-        <TextInput source="sku" disabled label="SKU" />
+        <TextInput
+          source="sku"
+          label="SKU"
+          validate={[required(SKU_REQUIRED), maxLength(255, SKU_MAX_LENGTH)]}
+        />
         <NumberInput
           source="price"
           min={0}
@@ -51,15 +64,12 @@ export const ProductSkuEdit = () => {
           min={1}
           validate={[required(QUANTITY_REQUIRED), minValue(1, QUANTITY_MIN)]}
         />
-        <ReferenceInput
-          source="productId"  
-          reference="products"
-          label="Product"
-          disabled
-        >
-          <AutocompleteInput optionText="name" disabled />
+        <ReferenceInput source="productId" reference="products" label="Product">
+          <AutocompleteInput
+            optionText="name"
+            helperText="Type to search product"
+          />
         </ReferenceInput>
-
         <ReferenceInput
           source="sizeAttributeId"
           reference="products/attributes"
@@ -71,7 +81,6 @@ export const ProductSkuEdit = () => {
             helperText="Type to search size attribute"
           />
         </ReferenceInput>
-
         <ReferenceInput
           source="colorAttributeId"
           reference="products/attributes"
@@ -83,11 +92,7 @@ export const ProductSkuEdit = () => {
             helperText="Type to search color attribute"
           />
         </ReferenceInput>
-        <TextInput source="covers" />
-
-        <DateInput disabled label="Created At" source="createdAt" />
-        <DateInput disabled label="Updated At" source="updatedAt" />
       </SimpleForm>
-    </Edit>
+    </Create>
   );
 };

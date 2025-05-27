@@ -1,5 +1,5 @@
 import { DateField, ReferenceField, TextField } from "react-admin";
-import { InactiveList } from "../components/InactiveList";
+import { InactiveList } from "../../components/InactiveList.tsx";
 
 export const InactiveSubcategoryList = () => (
   <InactiveList
