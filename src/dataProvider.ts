@@ -1,4 +1,4 @@
-import { DataProvider, fetchUtils } from "react-admin";
+import { DataProvider, fetchUtils, withLifecycleCallbacks } from "react-admin";
 import { TokenManager } from "./keycloakConfig";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -26,6 +26,28 @@ const httpClient = async (url: string, options: fetchUtils.Options = {}) => {
   }
 };
 
+// File upload utility
+const uploadFile = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = await TokenManager.getInstance().getValidToken();
+  const response = await fetch(`${API_URL}/files/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("File upload failed");
+  }
+
+  const result = await response.json();
+  return result.url;
+};
+
 // Extended DataProvider interface with custom methods
 export interface ExtendedDataProvider extends DataProvider {
   restoreOne: (resource: string, params: { id: any }) => Promise<{ data: any }>;
@@ -36,7 +58,7 @@ export interface ExtendedDataProvider extends DataProvider {
 }
 
 // Custom data provider for Spring Boot pagination format
-export const dataProvider: ExtendedDataProvider = {
+const baseDataProvider: ExtendedDataProvider = {
   getList: async (resource, params) => {
     const { pagination, sort, filter } = params;
     const page = pagination?.page ?? 1;
@@ -156,3 +178,61 @@ export const dataProvider: ExtendedDataProvider = {
     return { data: json || params.ids.map((id) => ({ id, restored: true })) };
   },
 };
+
+export const dataProvider = withLifecycleCallbacks(baseDataProvider, [
+  {
+    resource: "products",
+    beforeCreate: async (params) => {
+      const { covers, ...otherData } = params.data;
+
+      if (covers && covers.length > 0) {
+        const uploadPromises = covers
+          .filter((cover: any) => cover.rawFile) // Only upload new files
+          .map((cover: any) => uploadFile(cover.rawFile));
+
+        const uploadedUrls = await Promise.all(uploadPromises);
+
+        // Keep existing URLs and add new ones
+        const existingUrls = covers
+          .filter((cover: any) => !cover.rawFile)
+          .map((cover: any) => cover.src || cover.url);
+
+        return {
+          ...params,
+          data: {
+            ...otherData,
+            covers: [...existingUrls, ...uploadedUrls],
+          },
+        };
+      }
+
+      return params;
+    },
+    beforeUpdate: async (params) => {
+      const { covers, ...otherData } = params.data;
+
+      if (covers && covers.length > 0) {
+        const uploadPromises = covers
+          .filter((cover: any) => cover.rawFile) // Only upload new files
+          .map((cover: any) => uploadFile(cover.rawFile));
+
+        const uploadedUrls = await Promise.all(uploadPromises);
+
+        // Keep existing URLs and add new ones
+        const existingUrls = covers
+          .filter((cover: any) => !cover.rawFile)
+          .map((cover: any) => cover.src || cover.url);
+
+        return {
+          ...params,
+          data: {
+            ...otherData,
+            covers: [...existingUrls, ...uploadedUrls],
+          },
+        };
+      }
+
+      return params;
+    },
+  },
+]);

@@ -1,6 +1,8 @@
 import {
   AutocompleteInput,
   Create,
+  ImageField,
+  ImageInput,
   ReferenceInput,
   SimpleForm,
   TextInput,
@@ -66,6 +68,17 @@ export const ProductCreate = () => {
               isRequired: false,
             })}
           />
+
+          <ImageInput
+            source="covers"
+            accept={{ "image/*": [".png", ".jpg", ".jpeg", ".webp"] }}
+            maxSize={5000000}
+            multiple
+            label="Product Images"
+            helperText="Upload multiple images (max 5MB each, PNG/JPG/JPEG/WebP only)"
+          >
+            <ImageField source="src" title="title" />
+          </ImageInput>
         </SimpleForm>
       </Create>
       <ValidationErrorDialog
