@@ -1,6 +1,8 @@
 import {
   AutocompleteInput,
   Edit,
+  ImageField,
+  ImageInput,
   ReferenceInput,
   SimpleForm,
   TextInput,
@@ -25,7 +27,10 @@ export const ProductEdit = () => {
 
   return (
     <>
-      <Edit title="Product Edit" mutationOptions={mutationOptions}>
+      <Edit
+        title="Product Edit"
+        mutationOptions={mutationOptions}
+      >
         <SimpleForm>
           <TextInput disabled label="Id" source="id" />
           <TextInput
@@ -67,6 +72,17 @@ export const ProductEdit = () => {
               isRequired: false,
             })}
           />
+
+          <ImageInput
+            source="pictures"
+            accept={{ "image/*": [".png", ".jpg", ".jpeg", ".webp"] }}
+            maxSize={5000000}
+            multiple
+            label="Product Pictures"
+            helperText="Upload multiple images (max 5MB each, PNG/JPG/JPEG/WebP only)"
+          >
+            <ImageField source="src" title="title" />
+          </ImageInput>
 
           <TextInput disabled label="Created At" source="createdAt" />
           <TextInput disabled label="Updated At" source="updatedAt" />

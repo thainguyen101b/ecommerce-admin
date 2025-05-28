@@ -26,8 +26,15 @@ const httpClient = async (url: string, options: fetchUtils.Options = {}) => {
   }
 };
 
+interface FileUploadResponse {
+  src: string;
+  filename: string;
+  originalName: string;
+  size: number;
+}
+
 // File upload utility
-const uploadFile = async (file: File): Promise<string> => {
+const uploadFile = async (file: File): Promise<FileUploadResponse> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -44,8 +51,7 @@ const uploadFile = async (file: File): Promise<string> => {
     throw new Error("File upload failed");
   }
 
-  const result = await response.json();
-  return result.url;
+  return (await response.json()) as FileUploadResponse;
 };
 
 // Extended DataProvider interface with custom methods
@@ -183,51 +189,70 @@ export const dataProvider = withLifecycleCallbacks(baseDataProvider, [
   {
     resource: "products",
     beforeCreate: async (params) => {
-      const { covers, ...otherData } = params.data;
+      const { pictures, ...otherData } = params.data;
 
-      if (covers && covers.length > 0) {
-        const uploadPromises = covers
-          .filter((cover: any) => cover.rawFile) // Only upload new files
-          .map((cover: any) => uploadFile(cover.rawFile));
+      if (pictures && pictures.length > 0) {
+        const uploadPromises = pictures
+          .filter((picture: any) => picture.rawFile)
+          .map(async (picture: any) => {
+            const uploaded = await uploadFile(picture.rawFile);
+            console.log("upload file: ", uploaded);
 
-        const uploadedUrls = await Promise.all(uploadPromises);
+            return {
+              src: uploaded.src,
+              title: uploaded.originalName,
+            };
+          });
 
-        // Keep existing URLs and add new ones
-        const existingUrls = covers
-          .filter((cover: any) => !cover.rawFile)
-          .map((cover: any) => cover.src || cover.url);
+        const uploadedPictures = await Promise.all(uploadPromises);
+
+        const existingPictures = pictures
+          .filter((picture: any) => !picture.rawFile && picture.src)
+          .map((picture: any) => ({
+            src: picture.src,
+            title: picture.title,
+          }));
 
         return {
           ...params,
           data: {
             ...otherData,
-            covers: [...existingUrls, ...uploadedUrls],
+            pictures: [...existingPictures, ...uploadedPictures],
           },
         };
       }
 
       return params;
     },
+
     beforeUpdate: async (params) => {
-      const { covers, ...otherData } = params.data;
+      const { pictures, ...otherData } = params.data;
 
-      if (covers && covers.length > 0) {
-        const uploadPromises = covers
-          .filter((cover: any) => cover.rawFile) // Only upload new files
-          .map((cover: any) => uploadFile(cover.rawFile));
+      if (pictures && pictures.length > 0) {
+        const uploadPromises = pictures
+          .filter((picture: any) => picture.rawFile)
+          .map(async (picture: any) => {
+            const uploaded = await uploadFile(picture.rawFile);
+            return {
+              src: uploaded.src,
+              title: uploaded.originalName,
+            };
+          });
 
-        const uploadedUrls = await Promise.all(uploadPromises);
+        const uploadedPictures = await Promise.all(uploadPromises);
 
-        // Keep existing URLs and add new ones
-        const existingUrls = covers
-          .filter((cover: any) => !cover.rawFile)
-          .map((cover: any) => cover.src || cover.url);
+        const existingPictures = pictures
+          .filter((picture: any) => !picture.rawFile && picture.src)
+          .map((picture: any) => ({
+            src: picture.src,
+            title: picture.title,
+          }));
 
         return {
           ...params,
           data: {
             ...otherData,
-            covers: [...existingUrls, ...uploadedUrls],
+            pictures: [...existingPictures, ...uploadedPictures],
           },
         };
       }

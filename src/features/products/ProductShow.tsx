@@ -1,5 +1,6 @@
 import {
   DateField,
+  ImageField,
   ReferenceField,
   Show,
   SimpleShowLayout,
@@ -16,7 +17,7 @@ export const ProductShow = () => (
       </ReferenceField>
       <TextField source="description" />
       <TextField source="summary" />
-      <TextField source="covers" />
+      <ImageField source="pictures" src="src" title="title" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
     </SimpleShowLayout>

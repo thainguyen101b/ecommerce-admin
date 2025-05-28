@@ -70,11 +70,11 @@ export const ProductCreate = () => {
           />
 
           <ImageInput
-            source="covers"
+            source="pictures"
             accept={{ "image/*": [".png", ".jpg", ".jpeg", ".webp"] }}
             maxSize={5000000}
             multiple
-            label="Product Images"
+            label="Product Pictures"
             helperText="Upload multiple images (max 5MB each, PNG/JPG/JPEG/WebP only)"
           >
             <ImageField source="src" title="title" />
