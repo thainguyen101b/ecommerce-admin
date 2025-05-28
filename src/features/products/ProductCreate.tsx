@@ -4,57 +4,76 @@ import {
   ReferenceInput,
   SimpleForm,
   TextInput,
-  maxLength,
-  required,
-  useNotify,
 } from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside.tsx";
-
-const NAME_MAX_LENGTH = "Product name length must less than 255.";
-const NAME_REQUIRED = "Product name is required.";
+import { validateRequired, validateStr } from "../../utils/commonValidator.ts";
+import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
+import { useApiErrorHandler } from "../../utils/errorHandler.ts";
+import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
 
 export const ProductCreate = () => {
-  const instructions: string[] = [NAME_REQUIRED, NAME_MAX_LENGTH];
+  const {
+    validationErrors,
+    showValidationDialog,
+    hideValidationDialog,
+    handleApiError,
+  } = useApiErrorHandler();
 
-  const notify = useNotify();
-
-  const onError = (error: any) => {
-    notify(`Could not create product: ${error.message}`, { type: "error" });
-  };
+  const mutationOptions = useEnhancedMutationOptions({
+    handleApiError,
+    defaultErrorMessage: "Could not create product",
+  });
 
   return (
-    <Create
-      title="Product Creation"
-      aside={
-        <InstructionAside
-          title="Product instructions"
-          instructions={instructions}
-        />
-      }
-      mutationOptions={{ onError }}
-    >
-      <SimpleForm>
-        <TextInput
-          source="name"
-          validate={[required(NAME_REQUIRED), maxLength(225, NAME_MAX_LENGTH)]}
-        />
-        <ReferenceInput
-          source="subcategoryId"
-          reference="subcategories"
-          label="Subcategory"
-        >
-          <AutocompleteInput
-            optionText="name"
-            helperText="Type to search subcategory"
+    <>
+      <Create title="Product Creation" mutationOptions={mutationOptions}>
+        <SimpleForm>
+          <TextInput
+            source="name"
+            validate={validateStr({
+              fieldName: "Name",
+              minLen: 2,
+              maxLen: 200,
+            })}
           />
-        </ReferenceInput>
-        <TextInput source="summary" />
-        <TextInput
-          source="description"
-          multiline={true}
-          label="Short description"
-        />
-      </SimpleForm>
-    </Create>
+          <ReferenceInput
+            source="subcategoryId"
+            reference="subcategories"
+            label="Subcategory"
+          >
+            <AutocompleteInput
+              optionText="name"
+              helperText="Type to search subcategory"
+              validate={validateRequired({ fieldName: "Subcategory" })}
+            />
+          </ReferenceInput>
+          <TextInput
+            source="summary"
+            multiline
+            label="Short summary"
+            validate={validateStr({
+              fieldName: "Summary",
+              maxLen: 225,
+              isRequired: false,
+            })}
+          />
+          <TextInput
+            source="description"
+            multiline
+            label="Short description"
+            validate={validateStr({
+              fieldName: "Description",
+              maxLen: 1000,
+              isRequired: false,
+            })}
+          />
+        </SimpleForm>
+      </Create>
+      <ValidationErrorDialog
+        open={showValidationDialog}
+        onClose={hideValidationDialog}
+        fieldErrors={validationErrors}
+        title="Product Create Failed"
+      />
+    </>
   );
 };

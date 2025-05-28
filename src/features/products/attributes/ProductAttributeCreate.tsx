@@ -1,57 +1,67 @@
 import {
+  choices,
   Create,
-  maxLength,
   RadioButtonGroupInput,
   required,
   SimpleForm,
   TextInput,
-  useNotify,
 } from "react-admin";
-import { InstructionAside } from "../../../components/InstructionAside.tsx";
+import { useEnhancedMutationOptions } from "../../../hooks/useEnhancedMutationOptions.ts";
+import { useApiErrorHandler } from "../../../utils/errorHandler.ts";
+import { ValidationErrorDialog } from "../../../components/ValidationErrorDialog.tsx";
+import { validateStr } from "../../../utils/commonValidator.ts";
 
-const VALUE_REQUIRED = "Product attribute value is required.";
-const TYPE_REQUIRED = "Product attribute type is required.";
-const VALUE_MAX_LENGTH = "Product attribute value length must less than 255.";
+const attributeTypeChoices = [
+  { id: "COLOR", name: "Color" },
+  { id: "SIZE", name: "Size" },
+];
+
+const validateAttributeType = [
+  required("Type is required"),
+  choices(
+    attributeTypeChoices.map((c) => c.id),
+    "Must select a valid attribute type",
+  ),
+];
 
 export const ProductAttributeCreate = () => {
-  const instructions = [VALUE_REQUIRED, TYPE_REQUIRED, VALUE_MAX_LENGTH];
+  const {
+    validationErrors,
+    showValidationDialog,
+    hideValidationDialog,
+    handleApiError,
+  } = useApiErrorHandler();
 
-  const notify = useNotify();
-
-  const onError = (error: any) => {
-    notify(`Could not create product attribute: ${error.message}`, {
-      type: "error",
-    });
-  };
+  const mutationOptions = useEnhancedMutationOptions({
+    handleApiError,
+    defaultErrorMessage: "Could not create product attribute",
+  });
 
   return (
-    <Create
-      title="Attribute Creation"
-      aside={
-        <InstructionAside
-          title="Product attribute instructions"
-          instructions={instructions}
-        />
-      }
-      mutationOptions={{ onError }}
-    >
-      <SimpleForm>
-        <RadioButtonGroupInput
-          source="type"
-          choices={[
-            { id: "COLOR", name: "Color" },
-            { id: "SIZE", name: "Size" },
-          ]}
-          validate={[required(TYPE_REQUIRED)]}
-        />
-        <TextInput
-          source="value"
-          validate={[
-            required(VALUE_REQUIRED),
-            maxLength(255, VALUE_MAX_LENGTH),
-          ]}
-        />
-      </SimpleForm>
-    </Create>
+    <>
+      <Create title="Attribute Creation" mutationOptions={mutationOptions}>
+        <SimpleForm>
+          <RadioButtonGroupInput
+            source="type"
+            choices={attributeTypeChoices}
+            validate={validateAttributeType}
+          />
+          <TextInput
+            source="value"
+            validate={validateStr({
+              fieldName: "Value",
+              minLen: 2,
+              maxLen: 100,
+            })}
+          />
+        </SimpleForm>
+      </Create>
+      <ValidationErrorDialog
+        open={showValidationDialog}
+        onClose={hideValidationDialog}
+        fieldErrors={validationErrors}
+        title="Product Attribute Create Failed"
+      />
+    </>
   );
 };
