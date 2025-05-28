@@ -1,50 +1,56 @@
-import {
-  Edit,
-  SimpleForm,
-  TextInput,
-  maxLength,
-  required,
-  useNotify,
-} from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside.tsx";
-
-const NAME_REQUIRED = "Category name is required.";
-const NAME_MAX_LENGTH = "Category name length must less than 255.";
+import { Edit, SimpleForm, TextInput } from "react-admin";
+import { useApiErrorHandler } from "../../utils/errorHandler.ts";
+import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
+import { validateStr } from "../../utils/commonValidator.ts";
+import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
 
 export const CategoryEdit = () => {
-  const instructions = [NAME_REQUIRED, NAME_MAX_LENGTH];
+  const {
+    validationErrors,
+    showValidationDialog,
+    hideValidationDialog,
+    handleApiError,
+  } = useApiErrorHandler();
 
-  const notify = useNotify();
-
-  const onError = (error: any) => {
-    notify(`Could not edit category: ${error.message}`, { type: "error" });
-  };
+  const mutationOptions = useEnhancedMutationOptions({
+    handleApiError,
+    defaultErrorMessage: "Could not edit category",
+  });
 
   return (
-    <Edit
-      title="Category Edit"
-      aside={
-        <InstructionAside
-          title="Category instructions"
-          instructions={instructions}
-        />
-      }
-      mutationOptions={{ onError }}
-    >
-      <SimpleForm>
-        <TextInput disabled label="Id" source="id" />
-        <TextInput
-          source="name"
-          validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
-        />
-        <TextInput
-          source="description"
-          multiline={true}
-          label="Short description"
-        />
-        <TextInput disabled label="Created At" source="createdAt" />
-        <TextInput disabled label="Updated At" source="updatedAt" />
-      </SimpleForm>
-    </Edit>
+    <>
+      <Edit title="Category Edit" mutationOptions={mutationOptions}>
+        <SimpleForm>
+          <TextInput disabled label="Id" source="id" />
+          <TextInput
+            source="name"
+            validate={validateStr({
+              fieldName: "Name",
+              minLen: 2,
+              maxLen: 100,
+            })}
+          />
+          <TextInput
+            source="description"
+            multiline={true}
+            label="Short description"
+            validate={validateStr({
+              fieldName: "Description",
+              maxLen: 500,
+              isRequired: false,
+            })}
+          />
+          <TextInput disabled label="Created At" source="createdAt" />
+          <TextInput disabled label="Updated At" source="updatedAt" />
+        </SimpleForm>
+      </Edit>
+
+      <ValidationErrorDialog
+        open={showValidationDialog}
+        onClose={hideValidationDialog}
+        fieldErrors={validationErrors}
+        title="Category Edit Failed"
+      />
+    </>
   );
 };

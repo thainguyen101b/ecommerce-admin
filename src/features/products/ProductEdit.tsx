@@ -4,61 +4,80 @@ import {
   ReferenceInput,
   SimpleForm,
   TextInput,
-  maxLength,
-  required,
-  useNotify,
 } from "react-admin";
-import { InstructionAside } from "../../components/InstructionAside.tsx";
-
-const NAME_MAX_LENGTH = "Product name length must less than 255.";
-const NAME_REQUIRED = "Product name is required.";
+import { validateRequired, validateStr } from "../../utils/commonValidator.ts";
+import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
+import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
+import { useApiErrorHandler } from "../../utils/errorHandler.ts";
 
 export const ProductEdit = () => {
-  const instructions: string[] = [NAME_REQUIRED, NAME_MAX_LENGTH];
+  const {
+    validationErrors,
+    showValidationDialog,
+    hideValidationDialog,
+    handleApiError,
+  } = useApiErrorHandler();
 
-  const notify = useNotify();
-
-  const onError = (error: any) => {
-    notify(`Could not edit product: ${error.message}`, { type: "error" });
-  };
+  const mutationOptions = useEnhancedMutationOptions({
+    handleApiError,
+    defaultErrorMessage: "Could not edit product",
+  });
 
   return (
-    <Edit
-      title="Product Edit"
-      aside={
-        <InstructionAside
-          title="Product instructions"
-          instructions={instructions}
-        />
-      }
-      mutationOptions={{ onError }}
-    >
-      <SimpleForm>
-        <TextInput disabled label="Id" source="id" />
-        <TextInput
-          source="name"
-          validate={[required(NAME_REQUIRED), maxLength(255, NAME_MAX_LENGTH)]}
-        />
-        <TextInput source="summary" />
-        <TextInput
-          source="description"
-          multiline={true}
-          label="Short description"
-        />
-        <ReferenceInput
-          source="subcategoryId"
-          reference="subcategories"
-          label="Subcategory"
-        >
-          <AutocompleteInput
-            optionText="name"
-            helperText="Type to search subcategory"
+    <>
+      <Edit title="Product Edit" mutationOptions={mutationOptions}>
+        <SimpleForm>
+          <TextInput disabled label="Id" source="id" />
+          <TextInput
+            source="name"
+            validate={validateStr({
+              fieldName: "Name",
+              minLen: 2,
+              maxLen: 200,
+            })}
           />
-        </ReferenceInput>
 
-        <TextInput disabled label="Created At" source="createdAt" />
-        <TextInput disabled label="Updated At" source="updatedAt" />
-      </SimpleForm>
-    </Edit>
+          <ReferenceInput
+            source="subcategoryId"
+            reference="subcategories"
+            label="Subcategory"
+          >
+            <AutocompleteInput
+              optionText="name"
+              helperText="Type to search subcategory"
+              validate={validateRequired({ fieldName: "Subcategory" })}
+            />
+          </ReferenceInput>
+          <TextInput
+            source="summary"
+            multiline
+            validate={validateStr({
+              fieldName: "Summary",
+              maxLen: 225,
+              isRequired: false,
+            })}
+          />
+          <TextInput
+            source="description"
+            multiline
+            label="Short description"
+            validate={validateStr({
+              fieldName: "Description",
+              maxLen: 1000,
+              isRequired: false,
+            })}
+          />
+
+          <TextInput disabled label="Created At" source="createdAt" />
+          <TextInput disabled label="Updated At" source="updatedAt" />
+        </SimpleForm>
+      </Edit>
+      <ValidationErrorDialog
+        open={showValidationDialog}
+        onClose={hideValidationDialog}
+        fieldErrors={validationErrors}
+        title="Product Update Failed"
+      />
+    </>
   );
 };
