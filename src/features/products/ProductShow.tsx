@@ -15,9 +15,9 @@ export const ProductShow = () => (
       <ReferenceField source="subcategoryId" reference="subcategories">
         <TextField source="name" />
       </ReferenceField>
-      <TextField source="description" />
       <TextField source="summary" />
-      <ImageField source="pictures" src="src" title="title" />
+      <TextField source="description" />
+      <ImageField source="images" src="secureUrl" title="displayName" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
     </SimpleShowLayout>

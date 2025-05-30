@@ -1,4 +1,4 @@
-import { DataProvider, fetchUtils, withLifecycleCallbacks } from "react-admin";
+import { DataProvider, fetchUtils } from "react-admin";
 import { TokenManager } from "./keycloakConfig";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -26,34 +26,6 @@ const httpClient = async (url: string, options: fetchUtils.Options = {}) => {
   }
 };
 
-interface FileUploadResponse {
-  src: string;
-  filename: string;
-  originalName: string;
-  size: number;
-}
-
-// File upload utility
-const uploadFile = async (file: File): Promise<FileUploadResponse> => {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const token = await TokenManager.getInstance().getValidToken();
-  const response = await fetch(`${API_URL}/files/upload`, {
-    method: "POST",
-    headers: {
-      Authorization: `Token ${token}`,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error("File upload failed");
-  }
-
-  return (await response.json()) as FileUploadResponse;
-};
-
 // Extended DataProvider interface with custom methods
 export interface ExtendedDataProvider extends DataProvider {
   restoreOne: (resource: string, params: { id: any }) => Promise<{ data: any }>;
@@ -64,7 +36,7 @@ export interface ExtendedDataProvider extends DataProvider {
 }
 
 // Custom data provider for Spring Boot pagination format
-const baseDataProvider: ExtendedDataProvider = {
+export const dataProvider: ExtendedDataProvider = {
   getList: async (resource, params) => {
     const { pagination, sort, filter } = params;
     const page = pagination?.page ?? 1;
@@ -184,80 +156,3 @@ const baseDataProvider: ExtendedDataProvider = {
     return { data: json || params.ids.map((id) => ({ id, restored: true })) };
   },
 };
-
-export const dataProvider = withLifecycleCallbacks(baseDataProvider, [
-  {
-    resource: "products",
-    beforeCreate: async (params) => {
-      const { pictures, ...otherData } = params.data;
-
-      if (pictures && pictures.length > 0) {
-        const uploadPromises = pictures
-          .filter((picture: any) => picture.rawFile)
-          .map(async (picture: any) => {
-            const uploaded = await uploadFile(picture.rawFile);
-            console.log("upload file: ", uploaded);
-
-            return {
-              src: uploaded.src,
-              title: uploaded.originalName,
-            };
-          });
-
-        const uploadedPictures = await Promise.all(uploadPromises);
-
-        const existingPictures = pictures
-          .filter((picture: any) => !picture.rawFile && picture.src)
-          .map((picture: any) => ({
-            src: picture.src,
-            title: picture.title,
-          }));
-
-        return {
-          ...params,
-          data: {
-            ...otherData,
-            pictures: [...existingPictures, ...uploadedPictures],
-          },
-        };
-      }
-
-      return params;
-    },
-
-    beforeUpdate: async (params) => {
-      const { pictures, ...otherData } = params.data;
-
-      if (pictures && pictures.length > 0) {
-        const uploadPromises = pictures
-          .filter((picture: any) => picture.rawFile)
-          .map(async (picture: any) => {
-            const uploaded = await uploadFile(picture.rawFile);
-            return {
-              src: uploaded.src,
-              title: uploaded.originalName,
-            };
-          });
-
-        const uploadedPictures = await Promise.all(uploadPromises);
-
-        const existingPictures = pictures
-          .filter((picture: any) => !picture.rawFile && picture.src)
-          .map((picture: any) => ({
-            src: picture.src,
-            title: picture.title,
-          }));
-
-        return {
-          ...params,
-          data: {
-            ...otherData,
-            pictures: [...existingPictures, ...uploadedPictures],
-          },
-        };
-      }
-
-      return params;
-    },
-  },
-]);

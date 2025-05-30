@@ -1,8 +1,6 @@
 import {
   AutocompleteInput,
   Create,
-  ImageField,
-  ImageInput,
   ReferenceInput,
   SimpleForm,
   TextInput,
@@ -11,6 +9,7 @@ import { validateRequired, validateStr } from "../../utils/commonValidator.ts";
 import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
 import { useApiErrorHandler } from "../../utils/errorHandler.ts";
 import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
+import { CloudinaryImageInput } from "../../components/CloudinaryImageInput.tsx";
 
 export const ProductCreate = () => {
   const {
@@ -69,18 +68,17 @@ export const ProductCreate = () => {
             })}
           />
 
-          <ImageInput
-            source="pictures"
-            accept={{ "image/*": [".png", ".jpg", ".jpeg", ".webp"] }}
-            maxSize={5000000}
+          <CloudinaryImageInput
+            source="images"
+            label="Product Images"
             multiple
-            label="Product Pictures"
-            helperText="Upload multiple images (max 5MB each, PNG/JPG/JPEG/WebP only)"
-          >
-            <ImageField source="src" title="title" />
-          </ImageInput>
+            maxFiles={5}
+            maxSize={5000000}
+            helperText="Upload up to 5 product images (max 5MB each)"
+          />
         </SimpleForm>
       </Create>
+
       <ValidationErrorDialog
         open={showValidationDialog}
         onClose={hideValidationDialog}
