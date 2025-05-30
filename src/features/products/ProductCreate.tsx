@@ -53,7 +53,7 @@ export const ProductCreate = () => {
             label="Short summary"
             validate={validateStr({
               fieldName: "Summary",
-              maxLen: 225,
+              maxLen: 500,
               isRequired: false,
             })}
           />
