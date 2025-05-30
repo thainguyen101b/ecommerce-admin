@@ -4,7 +4,6 @@ import {
   DateField,
   ExportButton,
   FilterButton,
-  ImageField,
   List,
   ReferenceField,
   SearchInput,
@@ -29,12 +28,6 @@ export const ProductList = () => (
     <DatagridConfigurable>
       <TextField source="id" />
       <TextField source="name" />
-      <ImageField
-        source="images"
-        src="secureUrl"
-        title="displayName"
-        sortable={false}
-      />
       <ReferenceField source="subcategoryId" reference="subcategories">
         <TextField source="name" />
       </ReferenceField>

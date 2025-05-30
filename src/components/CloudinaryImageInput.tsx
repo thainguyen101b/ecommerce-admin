@@ -11,7 +11,7 @@ import {
   LinearProgress,
   Stack,
 } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import {
   CloudUpload as UploadIcon,
   Delete as DeleteIcon,
@@ -21,15 +21,8 @@ import { cloudinaryUploader } from "../cloudinaryConfig";
 
 export interface ImageData {
   url: string;
-  secureUrl: string;
-  assetFolder: string;
   displayName: string;
   publicId: string;
-  originalName: string;
-  width: number;
-  height: number;
-  format: string;
-  createdAt: string;
 }
 
 const validateFile = (file: File, maxSize: number): string | null => {
@@ -113,16 +106,9 @@ export const CloudinaryImageInput = ({
             setUploadProgress((prev) => ({ ...prev, [fileId]: 100 }));
 
             return {
-              url: result.url,
-              secureUrl: result.secure_url,
-              assetFolder: result.asset_folder,
+              url: result.secure_url,
               displayName: result.display_name,
               publicId: result.public_id,
-              originalFilename: result.original_filename,
-              width: result.width,
-              height: result.height,
-              format: result.format,
-              createdAt: result.created_at,
             };
           } catch (error) {
             setUploadProgress((prev) => {
@@ -176,7 +162,7 @@ export const CloudinaryImageInput = ({
         height: 150,
       });
     }
-    return image.secureUrl;
+    return image.url;
   };
 
   return (
@@ -210,24 +196,18 @@ export const CloudinaryImageInput = ({
         {images.length > 0 && (
           <Grid container spacing={2}>
             {images.map((image, index) => (
-              <Grid
-                item
-                xs={6}
-                sm={4}
-                md={3}
-                key={`${image.publicId || image.secureUrl}-${index}`}
-              >
+              <Grid>
                 <Card sx={{ height: "100%" }}>
                   <CardMedia
                     component="img"
                     height="120"
                     image={getOptimizedImageUrl(image)}
-                    alt={image.originalName}
+                    alt={image.displayName}
                     sx={{ objectFit: "cover" }}
                   />
                   <CardActions sx={{ justifyContent: "space-between", p: 1 }}>
                     <Typography variant="caption" noWrap sx={{ maxWidth: 100 }}>
-                      {image.originalName}
+                      {image.displayName}
                     </Typography>
                     <IconButton
                       size="small"

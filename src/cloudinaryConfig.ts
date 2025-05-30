@@ -1,4 +1,3 @@
-// cloudinaryConfig.ts
 export interface CloudinaryConfig {
   cloudName: string;
   uploadPreset: string;

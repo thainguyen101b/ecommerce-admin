@@ -60,7 +60,6 @@ export const ProductSkuList = () => (
         <TextField source="value" />
       </ReferenceField>
 
-      <TextField source="covers" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
     </DatagridConfigurable>
