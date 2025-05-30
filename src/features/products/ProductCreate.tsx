@@ -9,6 +9,7 @@ import { validateRequired, validateStr } from "../../utils/commonValidator.ts";
 import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
 import { useApiErrorHandler } from "../../utils/errorHandler.ts";
 import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
+import { CloudinaryImageInput } from "../../components/CloudinaryImageInput.tsx";
 
 export const ProductCreate = () => {
   const {
@@ -66,8 +67,18 @@ export const ProductCreate = () => {
               isRequired: false,
             })}
           />
+
+          <CloudinaryImageInput
+            source="images"
+            label="Product Images"
+            multiple
+            maxFiles={5}
+            maxSize={5000000}
+            helperText="Upload up to 5 product images (max 5MB each)"
+          />
         </SimpleForm>
       </Create>
+
       <ValidationErrorDialog
         open={showValidationDialog}
         onClose={hideValidationDialog}

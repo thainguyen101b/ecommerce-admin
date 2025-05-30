@@ -33,7 +33,6 @@ export const ProductList = () => (
       </ReferenceField>
       <TextField source="description" />
       <TextField source="summary" />
-      <TextField source="covers" />
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
     </DatagridConfigurable>
