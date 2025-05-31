@@ -1,17 +1,16 @@
-import { DateField, ImageField, ReferenceField, TextField } from "react-admin";
+import { DateField, ReferenceField, TextField } from "react-admin";
 import { InactiveList } from "../../components/InactiveList.tsx";
+import { getShowPageLink } from "../../utils/inactiveHelper.ts";
 
 export const InactiveProductList = () => (
   <InactiveList resource="products/inactive" title="Inactive Products">
     <TextField source="id" />
-    <ImageField
-      source="images"
-      src="secureUrl"
-      title="displayName"
-      sortable={false}
-    />
     <TextField source="name" />
-    <ReferenceField source="subcategoryId" reference="subcategories">
+    <ReferenceField
+      source="subcategoryId"
+      reference="subcategories"
+      link={getShowPageLink}
+    >
       <TextField source="name" />
     </ReferenceField>
     <TextField source="description" />

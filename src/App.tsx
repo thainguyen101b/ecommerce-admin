@@ -45,6 +45,11 @@ import {
 } from "./features/categories";
 import { Dashboard } from "./features/dashboard";
 import { useEffect, useState } from "react";
+import { InactiveProductShow } from "./features/products/InactiveProductShow";
+import { InactiveCategoryShow } from "./features/categories/InactiveCategoryShow";
+import { InactiveSubcategoryShow } from "./features/subcategories/InactiveSubcategoryShow";
+import { InactiveProductSkuShow } from "./features/products/skus/InactiveProductSkuShow";
+import { InactiveProductAttributeShow } from "./features/products/attributes/InactiveProductAttributeShow";
 
 const authProvider = keycloakAuthProvider(keycloak, {
   initOptions: keycloakInitOptions,
@@ -100,6 +105,7 @@ export const App = () => {
       <Resource
         name="categories/inactive"
         list={InactiveCategoryList}
+        show={InactiveCategoryShow}
         icon={DeleteIcon}
         options={{ label: "Inactive Categories" }}
       />
@@ -115,6 +121,7 @@ export const App = () => {
       <Resource
         name="subcategories/inactive"
         list={InactiveSubcategoryList}
+        show={InactiveSubcategoryShow}
         icon={DeleteIcon}
         options={{ label: "Inactive Subcategories" }}
       />
@@ -131,6 +138,7 @@ export const App = () => {
       <Resource
         name="products/inactive"
         list={InactiveProductList}
+        show={InactiveProductShow}
         icon={DeleteIcon}
         options={{ label: "Inactive Products" }}
       />
@@ -147,6 +155,7 @@ export const App = () => {
       <Resource
         name="products/skus/inactive"
         list={InactiveProductSkuList}
+        show={InactiveProductSkuShow}
         icon={DeleteIcon}
         options={{ label: "Inactive Product SKUs" }}
       />
@@ -163,6 +172,7 @@ export const App = () => {
       <Resource
         name="products/attributes/inactive"
         list={InactiveProductAttributeList}
+        show={InactiveProductAttributeShow}
         icon={DeleteIcon}
         options={{ label: "Inactive Product Attributes" }}
       />
