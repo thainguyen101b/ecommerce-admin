@@ -24,7 +24,7 @@ const productAttributeFilters = [<SearchInput source="q" alwaysOn />];
 
 export const ProductAttributeList = () => (
   <List
-    title="Product Attribute"
+    title="Product Attributes"
     actions={<ProductAttributeListActions />}
     filters={productAttributeFilters}
   >
