@@ -4,12 +4,22 @@ import {
   ReferenceField,
   SimpleShowLayout,
   TextField,
+  useRecordContext,
 } from "react-admin";
 import { InactiveShow } from "../../components/InactiveShow.tsx";
 import { getShowPageLink } from "../../utils/inactiveHelper.ts";
 
+const InactiveProductTitle = () => {
+  const record = useRecordContext();
+  return (
+    <span>
+      {record ? `Inactive Product ${record.name}` : "Inactive Product Details"}
+    </span>
+  );
+};
+
 export const InactiveProductShow = () => (
-  <InactiveShow resource="products/inactive" title="Inactive Product Details">
+  <InactiveShow resource="products/inactive" title={<InactiveProductTitle />}>
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField source="name" />

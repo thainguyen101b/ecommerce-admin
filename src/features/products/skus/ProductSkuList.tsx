@@ -30,7 +30,7 @@ const productSkuFilters = [<SearchInput source="q" alwaysOn />];
 export const ProductSkuList = () => (
   <List
     pagination={<PostPagination />}
-    title="Product SKU"
+    title="Product SKUs"
     actions={<ProductSkuListActions />}
     filters={productSkuFilters}
   >

@@ -15,7 +15,7 @@ const InactiveProductSkuTitle = () => {
   return (
     <span>
       {record
-        ? `Inactive Product SKU ${record.sku} Details`
+        ? `Inactive Product SKU ${record.sku}`
         : "Inactive Product SKU Details"}
     </span>
   );

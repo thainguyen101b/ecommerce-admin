@@ -63,7 +63,7 @@ const RestoreButton = ({ resource }: { resource: string }) => {
       notify("Item restored successfully");
       refresh();
     } catch (error: any) {
-      notify(`Error restoring: ${record?.id}`, { type: "error" });
+      notify(`Error restoring item: ${error.message}`, { type: "error" });
     }
   }, [record, dataProvider, notify, refresh, resource]);
   if (!record) return null;

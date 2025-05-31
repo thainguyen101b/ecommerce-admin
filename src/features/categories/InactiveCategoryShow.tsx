@@ -1,10 +1,26 @@
-import { DateField, SimpleShowLayout, TextField } from "react-admin";
+import {
+  DateField,
+  SimpleShowLayout,
+  TextField,
+  useRecordContext,
+} from "react-admin";
 import { InactiveShow } from "../../components/InactiveShow";
+
+const InactiveCategoryTitle = () => {
+  const record = useRecordContext();
+  return (
+    <span>
+      {record
+        ? `Inactive Category ${record.name}`
+        : "Inactive Category Details"}
+    </span>
+  );
+};
 
 export const InactiveCategoryShow = () => (
   <InactiveShow
     resource="categories/inactive"
-    title="Inactive Category Details"
+    title={<InactiveCategoryTitle />}
   >
     <SimpleShowLayout>
       <TextField source="id" />

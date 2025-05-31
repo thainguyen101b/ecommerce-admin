@@ -11,7 +11,7 @@ const InactiveProductAttributeTitle = () => {
   return (
     <span>
       {record
-        ? `Inactive Product Attribute ${record.type}: ${record.value} Details`
+        ? `Inactive Product Attribute ${record.type}: ${record.value}`
         : "Inactive Product Attribute Details"}
     </span>
   );
