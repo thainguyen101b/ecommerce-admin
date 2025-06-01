@@ -196,7 +196,7 @@ export const CloudinaryImageInput = ({
         {images.length > 0 && (
           <Grid container spacing={2}>
             {images.map((image, index) => (
-              <Grid>
+              <Grid key={index}>
                 <Card sx={{ height: "100%" }}>
                   <CardMedia
                     component="img"
