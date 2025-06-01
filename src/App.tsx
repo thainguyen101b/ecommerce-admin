@@ -1,4 +1,10 @@
-import { Admin, Loading, Resource } from "react-admin";
+import {
+  Admin,
+  Loading,
+  Resource,
+  radiantDarkTheme,
+  radiantLightTheme,
+} from "react-admin";
 import { dataProvider } from "./dataProvider";
 import { keycloakAuthProvider } from "ra-keycloak";
 import {
@@ -7,10 +13,6 @@ import {
   keycloakInitOptions,
   TokenManager,
 } from "./keycloakConfig";
-
-import CategoryIcon from "@mui/icons-material/Category";
-import ProductIcon from "@mui/icons-material/Inventory";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   InactiveSubcategoryList,
@@ -92,6 +94,8 @@ export const App = () => {
       dashboard={Dashboard}
       title="Ecommerce Admin"
       basename="/"
+      theme={radiantLightTheme}
+      darkTheme={radiantDarkTheme}
     >
       <Resource
         name="categories"
@@ -99,14 +103,12 @@ export const App = () => {
         create={CategoryCreate}
         edit={CategoryEdit}
         show={CategoryShow}
-        icon={CategoryIcon}
       />
 
       <Resource
         name="categories/inactive"
         list={InactiveCategoryList}
         show={InactiveCategoryShow}
-        icon={DeleteIcon}
         options={{ label: "Inactive Categories" }}
       />
 
@@ -122,7 +124,6 @@ export const App = () => {
         name="subcategories/inactive"
         list={InactiveSubcategoryList}
         show={InactiveSubcategoryShow}
-        icon={DeleteIcon}
         options={{ label: "Inactive Subcategories" }}
       />
 
@@ -132,14 +133,12 @@ export const App = () => {
         create={ProductCreate}
         edit={ProductEdit}
         show={ProductShow}
-        icon={ProductIcon}
       />
 
       <Resource
         name="products/inactive"
         list={InactiveProductList}
         show={InactiveProductShow}
-        icon={DeleteIcon}
         options={{ label: "Inactive Products" }}
       />
 
@@ -156,7 +155,6 @@ export const App = () => {
         name="products/skus/inactive"
         list={InactiveProductSkuList}
         show={InactiveProductSkuShow}
-        icon={DeleteIcon}
         options={{ label: "Inactive Product SKUs" }}
       />
 
@@ -173,7 +171,6 @@ export const App = () => {
         name="products/attributes/inactive"
         list={InactiveProductAttributeList}
         show={InactiveProductAttributeShow}
-        icon={DeleteIcon}
         options={{ label: "Inactive Product Attributes" }}
       />
     </Admin>
