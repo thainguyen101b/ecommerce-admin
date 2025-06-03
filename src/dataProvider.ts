@@ -154,5 +154,5 @@ export const dataProvider: ExtendedDataProvider = {
       },
     );
     return { data: json || params.ids.map((id) => ({ id, restored: true })) };
-  },
+  }
 };

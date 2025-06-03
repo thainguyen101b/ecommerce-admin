@@ -1,6 +1,5 @@
 import {
   DateField,
-  ImageField,
   NumberField,
   ReferenceField,
   Show,
@@ -40,7 +39,8 @@ export const ProductSkuShow = () => (
         <TextField source="value" />
       </ReferenceField>
 
-      <ImageField source="images" src="url" title="displayName" />
+      {/* images */}
+
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
     </SimpleShowLayout>

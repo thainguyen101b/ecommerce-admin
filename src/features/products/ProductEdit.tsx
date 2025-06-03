@@ -9,7 +9,6 @@ import { validateRequired, validateStr } from "../../utils/commonValidator.ts";
 import { ValidationErrorDialog } from "../../components/ValidationErrorDialog.tsx";
 import { useEnhancedMutationOptions } from "../../hooks/useEnhancedMutationOptions.ts";
 import { useApiErrorHandler } from "../../utils/errorHandler.ts";
-import { CloudinaryImageInput } from "../../components/CloudinaryImageInput.tsx";
 
 export const ProductEdit = () => {
   const {
@@ -69,14 +68,7 @@ export const ProductEdit = () => {
             })}
           />
 
-          <CloudinaryImageInput
-            source="images"
-            label="Product Images"
-            multiple
-            maxFiles={5}
-            maxSize={5000000}
-            helperText="Upload up to 5 product images (max 5MB each)"
-          />
+          {/* images */}
           <TextInput disabled label="Created At" source="createdAt" />
           <TextInput disabled label="Updated At" source="updatedAt" />
         </SimpleForm>
