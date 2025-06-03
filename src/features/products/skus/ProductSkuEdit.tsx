@@ -15,7 +15,6 @@ import {
   validateRequired,
 } from "../../../utils/commonValidator.ts";
 import { ValidationErrorDialog } from "../../../components/ValidationErrorDialog.tsx";
-import { CloudinaryImageInput } from "../../../components/CloudinaryImageInput.tsx";
 
 export const ProductSkuEdit = () => {
   const {
@@ -72,14 +71,7 @@ export const ProductSkuEdit = () => {
               validate={validateRequired({ fieldName: "Color Attribute" })}
             />
           </ReferenceInput>
-          <CloudinaryImageInput
-            source="images"
-            label="Product SKU Images"
-            multiple
-            maxFiles={5}
-            maxSize={5000000}
-            helperText="Upload up to 5 product SKU images (max 5MB each)"
-          />
+          {/* images */}
 
           <DateInput disabled label="Created At" source="createdAt" />
           <DateInput disabled label="Updated At" source="updatedAt" />

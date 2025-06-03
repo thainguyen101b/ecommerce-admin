@@ -1,6 +1,5 @@
 import {
   DateField,
-  ImageField,
   NumberField,
   ReferenceField,
   SimpleShowLayout,
@@ -58,7 +57,8 @@ export const InactiveProductSkuShow = () => (
         <TextField source="value" />
       </ReferenceField>
 
-      <ImageField source="images" src="url" title="displayName" />
+      {/* images */}
+
       <DateField source="createdAt" />
       <DateField source="updatedAt" />
       <DateField source="deletedAt" />
