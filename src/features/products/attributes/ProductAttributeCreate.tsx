@@ -50,7 +50,7 @@ export const ProductAttributeCreate = () => {
             source="value"
             validate={validateStr({
               fieldName: "Value",
-              minLen: 2,
+              minLen: 1,
               maxLen: 100,
             })}
           />
