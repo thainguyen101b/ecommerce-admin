@@ -1,10 +1,4 @@
-import {
-  Admin,
-  Loading,
-  Resource,
-  radiantDarkTheme,
-  radiantLightTheme,
-} from "react-admin";
+import { Admin, Loading, Resource } from "react-admin";
 import { dataProvider } from "./dataProvider";
 import { keycloakAuthProvider } from "ra-keycloak";
 import {
@@ -94,8 +88,6 @@ export const App = () => {
       dashboard={Dashboard}
       title="Ecommerce Admin"
       basename="/"
-      theme={radiantLightTheme}
-      darkTheme={radiantDarkTheme}
     >
       <Resource
         name="categories"
