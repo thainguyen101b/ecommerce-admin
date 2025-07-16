@@ -1,11 +1,9 @@
 import { ReactElement, ReactNode, useCallback } from "react";
 import {
-  BulkDeleteWithUndoButton,
   Button,
   DatagridConfigurable,
   ExportButton,
   FilterButton,
-  FunctionField,
   List,
   SearchInput,
   SelectColumnsButton,
@@ -13,7 +11,6 @@ import {
   useDataProvider,
   useListContext,
   useNotify,
-  useRecordContext,
   useRefresh,
   useUnselectAll,
 } from "react-admin";
@@ -26,7 +23,6 @@ const BulkRestoreButton = ({ resource }: { resource: string }) => {
   const notify = useNotify();
   const refresh = useRefresh();
   const unselectAll = useUnselectAll();
-  BulkDeleteWithUndoButton;
 
   const handleRestoreMany = useCallback(async () => {
     try {
@@ -43,35 +39,6 @@ const BulkRestoreButton = ({ resource }: { resource: string }) => {
     <Button
       label="Restore"
       onClick={handleRestoreMany}
-      startIcon={<RestoreIcon />}
-      color="primary"
-    />
-  );
-};
-
-const RestoreButton = ({ resource }: { resource: string }) => {
-  const record = useRecordContext();
-  const dataProvider = useDataProvider<ExtendedDataProvider>();
-  const notify = useNotify();
-  const refresh = useRefresh();
-
-  const handleRestore = useCallback(async () => {
-    if (!record) return;
-
-    try {
-      await dataProvider.restoreOne(resource, { id: record.id });
-      notify("Item restored successfully");
-      refresh();
-    } catch (error: any) {
-      notify(`Error restoring item: ${error.message}`, { type: "error" });
-    }
-  }, [record, dataProvider, notify, refresh, resource]);
-  if (!record) return null;
-
-  return (
-    <Button
-      label="Restore"
-      onClick={handleRestore}
       startIcon={<RestoreIcon />}
       color="primary"
     />
@@ -117,10 +84,6 @@ export const InactiveList = ({
         bulkActionButtons={<BulkRestoreButton resource={resource} />}
       >
         {children}
-        <FunctionField
-          label="Actions"
-          render={() => <RestoreButton resource={resource} />}
-        />
       </DatagridConfigurable>
     </List>
   );
